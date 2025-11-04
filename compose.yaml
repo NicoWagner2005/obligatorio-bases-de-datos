@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql_obligatorio
+    restart: always
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: reservas_ucu        
+      TZ: America/Montevideo              
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./base-de-datos/schema.sql:/docker-entrypoint-initdb.d/1_schema.sql
+      - ./base-de-datos/data.sql:/docker-entrypoint-initdb.d/2_data.sql
+
+volumes:
+  mysql_data:
+

@@ -131,4 +131,8 @@ Se deberá implementar una base de datos **relacional (MySQL)** con las siguient
 
 ## 👨‍💻 Autor
 **Nicolás Wagner**  
-Estudiante de Ingeniería en Informática – UCU  
+Estudiante de Ingeniería en Informática – UCU
+**Guillermo González**
+Estudiante de Ingeniería en Informática – UCU
+**Bruno Ocampo**
+Estudiante de Ingeniería en Informática – UCU
