@@ -31,11 +31,12 @@ INSERT INTO participante(ci, nombre, apellido, email) VALUES
 
 
 -- LOGINS
-INSERT INTO login(correo, contrasena) VALUES
-('fmachado@ucu.edu.uy', 'admin123'),
-('afernandez@ucu.edu.uy', 'ana123'),
-('cperez@ucu.edu.uy', 'carlos123'),
-('mrodriguez@ucu.edu.uy', 'maria123');
+INSERT INTO login(correo, contrasena, ci_participante) VALUES
+('fmachado@ucu.edu.uy', 'admin123', '10000001'),
+('afernandez@ucu.edu.uy', 'ana123', '10000002'),
+('cperez@ucu.edu.uy', 'carlos123', '10000003'),
+('mrodriguez@ucu.edu.uy', 'maria123', '10000004');
+
 
 
 -- PARTICIPANTE_PROGRAMA_ACADEMICO

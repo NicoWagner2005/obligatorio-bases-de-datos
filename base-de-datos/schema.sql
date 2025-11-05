@@ -2,8 +2,11 @@
 CREATE TABLE login (
     id_login INT AUTO_INCREMENT PRIMARY KEY,
     correo VARCHAR(50) UNIQUE NOT NULL,
-    contrasena VARCHAR(255) NOT NULL
+    contrasena VARCHAR(255) NOT NULL,
+    ci_participante VARCHAR(8) UNIQUE NOT NULL,
+    FOREIGN KEY (ci_participante) REFERENCES participante(ci)
 );
+
 
 -- PARTICIPANTE
 CREATE TABLE participante (

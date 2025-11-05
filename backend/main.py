@@ -22,7 +22,7 @@ def get_facultades():
     try:
         connection = get_connection()
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM facultad;")
+        cursor.execute("SELECT * FROM login;")
         facultades = cursor.fetchall()
         return facultades
     except Error as e:
