@@ -72,7 +72,7 @@ ENDPOINTS :
 ]
 
 --------------------------
-FRONTEND:
+## FRONTEND:
 
 
 Desarrollado con React, incialmente creamos la página de login, intentando ser fiel al estilo de las páginas ya existentes de la UCU. Desde esta página se podrá iniciar sesión para acceder a los distintos servicios. Luego de eso fueron creadas las siguientes páginas, con un diseño "placeholder" básico, imaginando lo que será la página de acuerdo a los servicios/funcionalidades que ofrecen: menuDeUsuario, reservarSalon, consultarReservas, consultarSanciones.
