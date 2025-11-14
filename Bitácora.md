@@ -9,68 +9,7 @@ Con el contenedor levantado y configurado, nos conectamos a la base de datos des
 Con las tablas ya creadas pasamos a crear los datos que vamos a usar para la verificación y demostración de nuestra aplicación. Insertamos en sus respectivas tablas y verificamos que este todo correcto y que nos permita su correcto uso a futuro.
 
 
-ENDPOINTS :
-# '/login'
-[
-  [
-    1,
-    "fmachado@ucu.edu.uy",
-    "admin123",
-    "10000001"
-  ],
-  [
-    2,
-    "afernandez@ucu.edu.uy",
-    "ana123",
-    "10000002"
-  ],
-  [
-    3,
-    "cperez@ucu.edu.uy",
-    "carlos123",
-    "10000003"
-  ],
-  [
-    4,
-    "mrodriguez@ucu.edu.uy",
-    "maria123",
-    "10000004"
-  ]
-]
-
-------------------------------
-# '/reservas'
-[
-  [
-    1,
-    1,
-    "2025-10-25",
-    1,
-    "activa"
-  ],
-  [
-    2,
-    2,
-    "2025-10-25",
-    2,
-    "cancelada"
-  ],
-  [
-    3,
-    3,
-    "2025-10-26",
-    3,
-    "activa"
-  ],
-  [
-    4,
-    4,
-    "2025-10-26",
-    4,
-    "finalizada"
-  ]
-]
-
+fuentes: https://docs.docker.com - https://fastapi.tiangolo.com - https://pypi.org/project/bcrypt/
 --------------------------
 ## FRONTEND:
 
