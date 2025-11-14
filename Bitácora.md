@@ -71,3 +71,9 @@ ENDPOINTS :
   ]
 ]
 
+--------------------------
+FRONTEND:
+
+
+Desarrollado con React, incialmente creamos la página de login, intentando ser fiel al estilo de las páginas ya existentes de la UCU. Desde esta página se podrá iniciar sesión para acceder a los distintos servicios. Luego de eso fueron creadas las siguientes páginas, con un diseño "placeholder" básico, imaginando lo que será la página de acuerdo a los servicios/funcionalidades que ofrecen: menuDeUsuario, reservarSalon, consultarReservas, consultarSanciones.
+De momento, las funcionalidades que dependen de la base de datos y el backend, contienen una funcionalidad "placeholder", que permite probar la página de manera mas interactiva, sin estar vinculada a los datos que necesita. Un ejemplo de esto es que la función de iniciar sesión está hardcodeada a un usuario y contraseña especificos, pero de esta manera podemos probar como es iniciar sesión, y qué pasa cuando el usuario y/o contraseña introducidos son incorrectos.
