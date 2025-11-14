@@ -1,0 +1,23 @@
+# Node / React / Next
+node_modules/
+dist/
+build/
+
+# Python / FastAPI
+__pycache__/
+*.pyc
+.venv/
+env/
+*.db
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Variables y configuración local
+.env
+.env.local
+
+# Logs
+*.log
+
