@@ -9,7 +9,7 @@ Con el contenedor levantado y configurado, nos conectamos a la base de datos des
 Con las tablas ya creadas pasamos a crear los datos que vamos a usar para la verificación y demostración de nuestra aplicación. Insertamos en sus respectivas tablas y verificamos que este todo correcto y que nos permita su correcto uso a futuro.
 
 
-fuentes: https://docs.docker.com - https://fastapi.tiangolo.com - https://pypi.org/project/bcrypt/
+fuentes: https://docs.docker.com - https://fastapi.tiangolo.com - https://pypi.org/project/bcrypt/ - https://fastapi.tiangolo.com/reference/apirouter/#fastapi.APIRouter
 --------------------------
 ## FRONTEND:
 
