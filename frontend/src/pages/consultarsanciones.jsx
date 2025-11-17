@@ -8,11 +8,15 @@ export default function CosultarSanciones() {
                     <div className="header">
                         <img src="/assets/images/logo-ucu-blanco.png" alt="logo UCU" className='logoUCU'/>
                         <div className="cerrarSesion">
-                            <button className="botonCerrarSesion" onClick={ () =>navigate(`/menu/guille`)}>         
-                                <img className="imagenCerrarSesion" src="../assets/images/volver.png"/>   
+                            <button className="botonVolver" onClick={ () =>navigate(`/menu/guille`)}>         
+                                <img className="imagenVolver" src="../assets/images/volver.png"/>   
                                 Volver 
                             </button>  
                         </div>
+                    </div>
+                    <div style={{"alignItems":"center","justifyContent":"center", "display":"flex", "flexDirection":"column"}}>
+                        <h1 style={{"color":"red"}}>SANCIONADO POR WACHIN!</h1>
+                        <img style={{"height":500, "width":500}} src="../assets/images/wachin.jpg" alt="" />
                     </div>
                 </div>
                 )        

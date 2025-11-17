@@ -32,7 +32,6 @@ export default function Menu(){
                 </div>
             </div>
             <div className="contenedorCards">
-
                 <div className="card" onClick={gotoReservarSalon}>
                     <h1>Reservar un salón</h1>
                     <img src="../assets/images/reservarSalon.png" style={{height:85, width:85}}/>
@@ -45,7 +44,6 @@ export default function Menu(){
                     <h1>Consultar Sanciones</h1>
                     <img src="../assets/images/consultarSanciones.png"/>
                 </div>
-
             </div>
         </div>
     )

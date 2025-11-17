@@ -1,11 +1,11 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom';
-import Login from './components/login.jsx';
-import Admin from './components/admin.jsx';
-import Menu from './components/menudeusuario.jsx';
-import ConsultarReservas from './components/consultarreservas.jsx';
-import ReservarSalon from './components/reservarsalon.jsx'
-import ConsultarSanciones from './components/consultarsanciones.jsx'
+import Login from './pages/login.jsx';
+import Admin from './pages/admin.jsx';
+import Menu from './pages/menudeusuario.jsx';
+import ConsultarReservas from './pages/consultarreservas.jsx';
+import ReservarSalon from './pages/reservarsalon.jsx'
+import ConsultarSanciones from './pages/consultarsanciones.jsx'
 
 
 function App() {
