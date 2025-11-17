@@ -14,6 +14,8 @@ class Sala(BaseModel):
 
 class ReservaResponse(BaseModel):
     message: str
+    id_reserva: int
+    estado: str
 
 class EstadoReserva(str, Enum):
     activa = "activa"
@@ -24,7 +26,7 @@ class Reserva(BaseModel):
     id_sala: int
     fecha: str
     id_turno: int
-    estado: EstadoReserva
+    ci_participante: str
 
 
 class Edificio(BaseModel):
