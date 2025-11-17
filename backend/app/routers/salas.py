@@ -1,7 +1,8 @@
 from fastapi import APIRouter
 from app.database import get_connection
 from app.models.salas import EdificiosResponse
-
+from app.models.salas import ReservaResponse
+from app.models.salas import Reserva
 router = APIRouter(prefix="/salas", tags=["Salas"])
 
 @router.get("/", response_model=EdificiosResponse)
@@ -43,6 +44,33 @@ def get_salas():
             })
 
         return {"edificios": list(edificios.values())}
+
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@router.post('/reservar', response_model=ReservaResponse)
+def reservar_sala(datos_reserva : Reserva):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """INSERT INTO reserva(id_sala, fecha, id_turno, estado)
+               VALUES (%s, %s, %s, %s)""",
+            (datos_reserva.id_sala, datos_reserva.fecha, datos_reserva.id_turno, datos_reserva.estado.value)
+        )
+        conn.commit()
+
+
+        id_reserva = cursor.lastrowid
+
+        return {
+            "message": "Reserva creada exitosamente",
+            "id_reserva": id_reserva,
+            "estado": datos_reserva.estado.value
+        }
 
     finally:
         cursor.close()
