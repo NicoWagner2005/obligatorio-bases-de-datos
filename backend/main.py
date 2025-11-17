@@ -1,4 +1,3 @@
-from fastapi import FastAPI, HTTPException
 import mysql.connector
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
@@ -24,6 +23,7 @@ def get_connection():
         password="root",
         database="reservas_ucu"
     )
+
 
 # Instala esto si no lo tienes: pip install email-validator
 
