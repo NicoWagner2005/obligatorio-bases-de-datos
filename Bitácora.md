@@ -9,65 +9,10 @@ Con el contenedor levantado y configurado, nos conectamos a la base de datos des
 Con las tablas ya creadas pasamos a crear los datos que vamos a usar para la verificación y demostración de nuestra aplicación. Insertamos en sus respectivas tablas y verificamos que este todo correcto y que nos permita su correcto uso a futuro.
 
 
-ENDPOINTS :
-# '/login'
-[
-  [
-    1,
-    "fmachado@ucu.edu.uy",
-    "admin123",
-    "10000001"
-  ],
-  [
-    2,
-    "afernandez@ucu.edu.uy",
-    "ana123",
-    "10000002"
-  ],
-  [
-    3,
-    "cperez@ucu.edu.uy",
-    "carlos123",
-    "10000003"
-  ],
-  [
-    4,
-    "mrodriguez@ucu.edu.uy",
-    "maria123",
-    "10000004"
-  ]
-]
+fuentes: https://docs.docker.com - https://fastapi.tiangolo.com - https://pypi.org/project/bcrypt/
+--------------------------
+## FRONTEND:
 
-------------------------------
-# '/reservas'
-[
-  [
-    1,
-    1,
-    "2025-10-25",
-    1,
-    "activa"
-  ],
-  [
-    2,
-    2,
-    "2025-10-25",
-    2,
-    "cancelada"
-  ],
-  [
-    3,
-    3,
-    "2025-10-26",
-    3,
-    "activa"
-  ],
-  [
-    4,
-    4,
-    "2025-10-26",
-    4,
-    "finalizada"
-  ]
-]
 
+Desarrollado con React, incialmente creamos la página de login, intentando ser fiel al estilo de las páginas ya existentes de la UCU. Desde esta página se podrá iniciar sesión para acceder a los distintos servicios. Luego de eso fueron creadas las siguientes páginas, con un diseño "placeholder" básico, imaginando lo que será la página de acuerdo a los servicios/funcionalidades que ofrecen: menuDeUsuario, reservarSalon, consultarReservas, consultarSanciones.
+De momento, las funcionalidades que dependen de la base de datos y el backend, contienen una funcionalidad "placeholder", que permite probar la página de manera mas interactiva, sin estar vinculada a los datos que necesita. Un ejemplo de esto es que la función de iniciar sesión está hardcodeada a un usuario y contraseña especificos, pero de esta manera podemos probar como es iniciar sesión, y qué pasa cuando el usuario y/o contraseña introducidos son incorrectos.

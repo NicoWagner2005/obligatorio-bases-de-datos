@@ -1,7 +1,10 @@
+from fastapi import FastAPI, HTTPException
 import mysql.connector
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 from fastapi import FastAPI, HTTPException, status
+from mysql.connector import Error
+from datetime import date, timedelta
 
 app = FastAPI()
 
@@ -22,11 +25,6 @@ def get_connection():
         database="reservas_ucu"
     )
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-
 # Instala esto si no lo tienes: pip install email-validator
 
 class LoginRequest(BaseModel):
@@ -45,31 +43,125 @@ def login_user(credentials: LoginRequest):
     conn = None
     cursor = None
 
+
+# CONSULTAR SANCIONES DE UN USUARIO
+@app.get("/sanciones/{ci_participante}")
+def get_sanciones(ci_participante: str):
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
-        query = "SELECT * FROM login WHERE correo = %s AND contrasena = %s"
-        cursor.execute(query, (credentials.email, credentials.password))
-        user = cursor.fetchone() # recupera solo una fila
+        cursor.execute("""
+            SELECT fecha_inicio, fecha_fin
+            FROM sancion_participante
+            WHERE ci_participante = %s
+            ORDER BY fecha_inicio DESC;
+        """, (ci_participante,))
+        sanciones = cursor.fetchall()
+        if not sanciones:
+            return {"message": "El usuario no tiene sanciones registradas"}
 
-        if not user:
-            # ✅ 401 para credenciales incorrectas
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Email o contraseña incorrectos"
-            )
+        return {"sanciones": sanciones}
 
-        # ✅ 200 automático al retornar exitosamente
-        return {
-            "message": "Login exitoso",
-            "token": "jwt_token_aqui",
-            "user": user
-        }
-
+    except Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
-        cursor.close()
-        conn.close()
-# logica de reservas
+        if conn.is_connected():
+            cursor.close()
+            conn.close()
 
-# creo que lo mejor es que por defecto esten las salas agrupadas por edificio
+
+
+# CONTROL AUTOMÁTICO DE SANCIONES (por inasistencia)
+@app.post("/control_sanciones")
+def control_sanciones():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Buscar reservas finalizadas ayer
+        ayer = date.today() - timedelta(days=1)
+        cursor.execute("""
+            SELECT id_reserva FROM reserva
+            WHERE fecha = %s AND estado = 'finalizada';
+        """, (ayer,))
+        reservas = cursor.fetchall()
+
+        sancionados = []
+
+        for r in reservas:
+            # Verificar si nadie asistió
+            cursor.execute("""
+                SELECT COUNT(*) AS asistentes
+                FROM reserva_participante
+                WHERE id_reserva = %s AND asistencia = TRUE;
+            """, (r["id_reserva"],))
+            asistentes = cursor.fetchone()["asistentes"]
+
+            if asistentes == 0:
+                # Marcar reserva como sin asistencia
+                cursor.execute("""
+                    UPDATE reserva SET estado = 'sin_asistencia' WHERE id_reserva = %s;
+                """, (r["id_reserva"],))
+                conn.commit()
+
+                # Sancionar a todos los participantes de esa reserva
+                cursor.execute("""
+                    SELECT ci_participante
+                    FROM reserva_participante
+                    WHERE id_reserva = %s;
+                """, (r["id_reserva"],))
+                participantes = cursor.fetchall()
+
+                for p in participantes:
+                    inicio = date.today()
+                    fin = inicio + timedelta(days=60)
+
+                    cursor.execute("""
+                        INSERT INTO sancion_participante (ci_participante, fecha_inicio, fecha_fin)
+                        VALUES (%s, %s, %s);
+                    """, (p["ci_participante"], inicio, fin))
+                    sancionados.append(p["ci_participante"])
+                conn.commit()
+
+        if len(sancionados) == 0:
+            return {"message": "No se aplicaron sanciones hoy"}
+        else:
+            return {"message": "Sanciones aplicadas a", "usuarios": sancionados}
+
+    except Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if conn.is_connected():
+            cursor.close()
+            conn.close()
+
+
+# VALIDAR SI UN USUARIO TIENE SANCIONES ACTIVAS
+@app.get("/validar_sancion/{ci_participante}")
+def validar_sancion(ci_participante: str):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        hoy = date.today()
+
+        cursor.execute("""
+            SELECT COUNT(*) AS activas
+            FROM sancion_participante
+            WHERE ci_participante = %s
+            AND %s BETWEEN fecha_inicio AND fecha_fin;
+        """, (ci_participante, hoy))
+
+        resultado = cursor.fetchone()["activas"]
+
+        if resultado > 0:
+            return {"bloqueado": True, "message": "El usuario tiene una sanción activa y no puede realizar reservas"}
+        else:
+            return {"bloqueado": False, "message": "El usuario no tiene sanciones activas"}
+
+    except Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if conn.is_connected():
+            cursor.close()
+            conn.close()
