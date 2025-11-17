@@ -1,15 +1,16 @@
-import { useParams } from "react-router-dom"
 import "./menudeusuario.css"
 import { useNavigate } from 'react-router-dom';
 
 
 export default function Menu(){
+    const location = useLocation()
+    const usuario = location.state?.usuario
     const navigate = useNavigate()
-    const { id } = useParams()
+    
 
-    const gotoReservarSalon = () =>
+    const gotoReservarSala = () =>
     {
-        navigate("/reservarsalon")
+        navigate("/reservarsala")
     }
     const gotoConsultarReservas = () =>
     {
@@ -32,8 +33,8 @@ export default function Menu(){
                 </div>
             </div>
             <div className="contenedorCards">
-                <div className="card" onClick={gotoReservarSalon}>
-                    <h1>Reservar un salón</h1>
+                <div className="card" onClick={gotoReservarSala}>
+                    <h1>Reservar una sala</h1>
                     <img src="../assets/images/reservarSalon.png" style={{height:85, width:85}}/>
                 </div>
                 <div className="card" onClick={gotoConsultarReservas}>

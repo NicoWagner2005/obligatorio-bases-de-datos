@@ -3,6 +3,9 @@ import { useState } from 'react';
 import { Navigate } from "react-router-dom"
 import "./login.css"
 import { useNavigate } from 'react-router-dom';
+import API_URL from "@/constants/api";
+
+
 
 export default function Login() {
 
@@ -11,23 +14,32 @@ export default function Login() {
     const [error, setError] = useState(false);        
     const navigate = useNavigate()
 
-    const IniciarSesion = () => {
-        navigate(`/menu/${usuario}`)
+    const fetchLoginData = async (email, password) => {
+    const res = await fetch(`${API_URL}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+    });
+    if (!res.ok) {
+      setError(true)
+      throw new Error("Credenciales incorrectas");
+      
+    }
+    if (res.ok){
+      setError(false)
+      IniciarSesion()}
+      return res.json();
+    };
+
+    const IniciarSesion = (usuario) => {
+    navigate("/menu", { state: { usuario } })
     }
 
-    const intentarIniciarSesion = (e) => {            //logica actual para ir probando, mas adelante hay que implementarle el backend, cuando tenga la API de la bdd
-        e.preventDefault()
-        if(usuario==="guille" & contraseña==="12345")
-        {
-            setError(false)
-            IniciarSesion()
-        }
-        else{
-            setError(true)
-        }
+    const intentarIniciarSesion = (e) => {           
+        fetchLoginData(usuario , contraseña)
     }
 
-  return (
+    return (
       <div className="maincontainer">
         <div className='ParteIzq'>
             <h1 className='titulo'>Reserva de salones</h1>
@@ -52,5 +64,5 @@ export default function Login() {
           
         </div>
       </div>
-  )
+    )
 }

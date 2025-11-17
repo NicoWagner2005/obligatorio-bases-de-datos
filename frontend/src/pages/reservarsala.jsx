@@ -1,10 +1,10 @@
-import './reservarSalon.css'
+import './reservarSala.css'
 import { Navigate, useNavigate } from 'react-router-dom'
 import usuario from './login'
 
 
 
-export default function ReservarSalon() {
+export default function ReservarSala() {
 
     const navigate = useNavigate()
 
@@ -35,7 +35,7 @@ export default function ReservarSalon() {
                 </div>
             </div>
         </div>
-        )                                               //cambiar navigate(/menu/guille) a {usuario} cuando implemente Context
+        )                                            
 
     }
 
