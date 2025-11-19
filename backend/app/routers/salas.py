@@ -87,22 +87,7 @@ def reservar_sala(datos_reserva: Reserva):
 
         tipo_sala = sala["tipo_sala"]
 
-        # 3) Chequear máximo de 2 reservas activas por sala/día
-        cursor.execute("""
-                       SELECT COUNT(*) AS total
-                       FROM reserva
-                       WHERE id_sala = %s
-                         AND fecha = %s
-                         AND estado = 'activa'
-                       """, (datos_reserva.id_sala, datos_reserva.fecha))
 
-        cantidad = cursor.fetchone()["total"]
-
-        if cantidad >= 2:
-            raise HTTPException(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail="Esta sala ya tiene 2 reservas activas para este día"
-            )
 
         # 4) Obtener rol del participante
         cursor.execute("""
@@ -125,7 +110,24 @@ def reservar_sala(datos_reserva: Reserva):
                 detail="Los estudiantes no pueden reservar salas exclusivas"
             )
 
-        # 5) Insertar reserva (UNIQUE controla disponibilidad)
+        # Chequear máximo de 2 reservas activas por sala/día
+        cursor.execute("""
+                       SELECT COUNT(*) AS total
+                       FROM reserva
+                       WHERE id_sala = %s
+                         AND fecha = %s
+                         AND estado = 'activa'
+                       """, (datos_reserva.id_sala, datos_reserva.fecha))
+
+        cantidad = cursor.fetchone()["total"]
+
+        if cantidad >= 2 and rol == "estudiante":
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="Esta sala ya tiene 2 reservas activas para este día"
+            )
+
+        # 5) Insertar reserva (UNIQUE en la base de datos controla disponibilidad)
         cursor.execute("""
                        INSERT INTO reserva(id_sala, fecha, id_turno, estado)
                        VALUES (%s, %s, %s, %s)

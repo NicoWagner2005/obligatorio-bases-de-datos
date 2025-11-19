@@ -10,8 +10,6 @@ class Sala(BaseModel):
     capacidad: int
     tipo_sala: str
 
-
-
 class ReservaResponse(BaseModel):
     message: str
     id_reserva: int
