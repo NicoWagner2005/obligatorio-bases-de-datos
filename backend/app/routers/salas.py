@@ -1,9 +1,8 @@
 from fastapi import APIRouter, HTTPException, status
-from mysql.connector import IntegrityError
+from mysql.connector import IntegrityError, Error
 from datetime import date
 from app.database import get_connection
-from app.models.salas import EdificiosResponse, ReservaResponse, Reserva
-
+from app.models.salas import EdificiosResponse, ReservaResponse, Reserva, AsistenciaResponse, AsistenciaRequest
 router = APIRouter(prefix="/salas", tags=["Salas"])
 
 
@@ -158,3 +157,31 @@ def reservar_sala(datos_reserva: Reserva):
     finally:
         cursor.close()
         conn.close()
+
+@router.put("/asistir", response_model=AsistenciaResponse)
+def marcar_asistencia(reserva: AsistenciaRequest):
+    conn = None
+    cursor = None
+
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+            UPDATE reserva_participante
+            SET asistencia = asistencia + 1
+            WHERE id_reserva = %s
+            """, (reserva.id_reserva,))
+        if cursor.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Reserva no encontrada")
+
+        conn.commit()
+
+        return {"message": "Asistencia marcada exitosamente"}
+    except Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        conn.close()
+

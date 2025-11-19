@@ -34,3 +34,9 @@ class Edificio(BaseModel):
 
 class EdificiosResponse(BaseModel):
     edificios: List[Edificio]
+
+class AsistenciaResponse(BaseModel):
+    message: str
+
+class AsistenciaRequest(BaseModel):
+    id_reserva: int
