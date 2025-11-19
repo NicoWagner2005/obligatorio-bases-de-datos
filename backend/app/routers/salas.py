@@ -169,6 +169,27 @@ def marcar_asistencia(reserva: AsistenciaRequest):
 
         cursor.execute(
             """
+                SELECT asistencia FROM reserva_participante
+                WHERE id_reserva = %s
+            """, (reserva.id_reserva,)
+        )
+
+        cursor.execute(
+            """
+                SELECT s.capacidad
+                FROM sala s JOIN reserva r ON s.id_sala = r.id_sala
+                WHERE r.id_reserva = %s
+            """, (reserva.id_reserva,)
+        )
+        capacidad = cursor.fetchone()["capacidad"]
+
+        asistencia = cursor.fetchone()["asistencia"]
+
+        if asistencia + 1 > capacidad:
+            raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, detail="La cantidad de participantes excede la capacidad de la sala")
+
+        cursor.execute(
+            """
             UPDATE reserva_participante
             SET asistencia = asistencia + 1
             WHERE id_reserva = %s
