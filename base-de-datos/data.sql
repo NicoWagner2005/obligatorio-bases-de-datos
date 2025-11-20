@@ -5,12 +5,11 @@
 
 
 -- LOGINS
-INSERT INTO login (correo, contrasena) VALUES
-('fmachado@ucu.edu.uy', 'admin123'),
-('afernandez@ucu.edu.uy', 'ana123'),
-('cperez@ucu.edu.uy', 'carlos123'),
-('mrodriguez@ucu.edu.uy', 'maria123');
-
+INSERT INTO login (contrasena) VALUES
+('$2b$14$4UiYD6utT8rxM2aqan3C4uSUcdTdqeY5G.d1H7W2yMFIW1gyKhTaa'),   # admin123
+('$2b$14$EyadnN0yFHCJ9rFXH8vwe.AA5u5fMyLEp5aXKso1GBS1CDUlkeNI.'),   # user123
+('contrasena'),
+('otracontrasena');
 
 -- PARTICIPANTES
 -- Vinculamos cada participante con el user_id correspondiente

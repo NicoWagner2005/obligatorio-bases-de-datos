@@ -1,7 +1,6 @@
 -- LOGIN
 CREATE TABLE login (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
-    correo VARCHAR(50) UNIQUE NOT NULL,
     contrasena VARCHAR(255) NOT NULL
 );
 
