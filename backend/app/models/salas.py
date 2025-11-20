@@ -10,8 +10,6 @@ class Sala(BaseModel):
     capacidad: int
     tipo_sala: str
 
-
-
 class ReservaResponse(BaseModel):
     message: str
     id_reserva: int
@@ -36,3 +34,9 @@ class Edificio(BaseModel):
 
 class EdificiosResponse(BaseModel):
     edificios: List[Edificio]
+
+class AsistenciaResponse(BaseModel):
+    message: str
+
+class AsistenciaRequest(BaseModel):
+    id_reserva: int
