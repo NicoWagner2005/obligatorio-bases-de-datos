@@ -18,6 +18,7 @@ Dividimos los endpoints por área: auth con los endpoints de registro y login, s
 
 Para el login utilizamos la librería bcrypt para hashear la contraseña del usuario, guardando la contraseña hasheada en la base de datos, mucho más seguro que simplemente usar usuario y contraseña sin hash.
 
+Hicimos los endpoints para las consultas para análisis y BI y como las 3 consultas adicionales agregamos: salas menos reservadas, turnos menos demandados y la cantidad de reservas por sala.
 
 fuentes: https://docs.docker.com - https://fastapi.tiangolo.com - https://pypi.org/project/bcrypt/ - https://fastapi.tiangolo.com/reference/apirouter/#fastapi.APIRouter - https://www.w3schools.com
 --------------------------
