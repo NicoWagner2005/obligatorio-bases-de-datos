@@ -1,5 +1,7 @@
 from fastapi import APIRouter
-from app.database import get_connection
+from pydantic.v1.errors import cls_kwargs
+
+from app.database import get_connection, close_connection
 
 router = APIRouter(prefix="/analytics", tags=["Analytics"])
 
@@ -29,9 +31,7 @@ def get_sala_mas_reservada():
         )
 
     finally:
-        cursor.close()
-        conn.close()
-
+        close_connection(cursor, conn)
 
 @router.get("/turnos-mas-demandados")
 def get_turnos_mas_demandados():
@@ -59,8 +59,7 @@ def get_turnos_mas_demandados():
         )
 
     finally:
-        cursor.close()
-        conn.close()
+       close_connection(cursor, conn)
 
 @router.get("/promedio-participantes-sala")
 def get_promedio_participantes_sala():
@@ -89,8 +88,7 @@ def get_promedio_participantes_sala():
         )
 
     finally:
-        cursor.close()
-        conn.close()
+        close_connection(cursor, conn)
 
 @router.get("/cantidad-reservas-carrera-y-facultad")
 def get_cantidad_reservas_por_carrera_y_facultad():
@@ -113,9 +111,7 @@ def get_cantidad_reservas_por_carrera_y_facultad():
         )
 
     finally:
-        cursor.close()
-        conn.close()
-
+        close_connection(cursor, conn)
 
 @router.get("/porcentaje-ocupacion-salas-edificio")
 def get_porcentaje_ocupacion_sala_por_edificio():
@@ -145,9 +141,7 @@ def get_porcentaje_ocupacion_sala_por_edificio():
         )
 
     finally:
-        cursor.close()
-        conn.close()
-
+        close_connection(cursor, conn)
 
 @router.get("/cantidad-reservas-asistencias-tipo-usuario")
 def get_cantidad_reservas_y_asistencias_tipo_usuario():
@@ -174,8 +168,7 @@ def get_cantidad_reservas_y_asistencias_tipo_usuario():
         )
 
     finally:
-        cursor.close()
-        conn.close()
+        close_connection(cursor, conn)
 
 @router.get("/cantidad-sanciones-tipo-usuario")
 def get_cantidad_sanciones_por_tipo_usuario():
@@ -196,9 +189,7 @@ def get_cantidad_sanciones_por_tipo_usuario():
         )
 
     finally:
-        cursor.close()
-        conn.close()
-
+        close_connection(cursor, conn)
 
 @router.get("/porcentaje-reservas-efectivamente-utilizadas")
 def get_porcentaje_reservas_efectivamente_utilizadas():
@@ -230,5 +221,84 @@ def get_porcentaje_reservas_efectivamente_utilizadas():
         )
 
     finally:
-        cursor.close()
-        conn.close()
+        close_connection(cursor, conn)
+
+@router.get("/salas-menos-reservadas")
+def get_salas_menos_reservadas():
+    conn = None
+    cursor = None
+
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+                SELECT s.nombre_sala, r.total_reservas
+                FROM sala s
+                JOIN (
+                    SELECT id_sala, COUNT(*) AS total_reservas
+                    FROM reserva
+                    GROUP BY id_sala
+                    ORDER BY total_reservas ASC
+                    LIMIT 3
+                ) AS r
+                ON s.id_sala = r.id_sala
+                ORDER BY r.total_reservas DESC;
+            """
+        )
+
+    finally:
+        close_connection(cursor, conn)
+
+@router.get("/turnos-menos-demandados")
+def get_turnos_menos_demandados():
+    conn = None
+    cursor = None
+
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+                SELECT t.hora_inicio, r.total_reservas
+                FROM turno t
+                JOIN (
+                    SELECT id_turno, COUNT(*) as total_reservas
+                    FROM reserva
+                    GROUP BY id_turno
+                    ORDER BY total_reservas ASC
+                    LIMIT 3
+                ) AS r
+                ON t.id_turno = r.id_turno
+                ORDER BY r.total_reservas DESC;
+            """
+        )
+
+    finally:
+       close_connection(cursor, conn)
+
+@router.get("/cantidad-reservas-por-sala")
+def get_cantidad_reservas_por_sala():
+    conn = None
+    cursor = None
+
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+                SELECT
+                    s.nombre_sala,
+                    COUNT(DISTINCT r.id_reserva) AS cantidad_reservas
+                FROM reserva r
+                JOIN sala s
+                    ON r.id_sala = s.id_sala
+                GROUP BY s.nombre_sala
+            """
+        )
+
+    finally:
+        close_connection(cursor, conn)

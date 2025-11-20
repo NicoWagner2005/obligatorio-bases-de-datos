@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from mysql.connector import IntegrityError, Error
 from datetime import date
-from app.database import get_connection
+from app.database import get_connection, close_connection
 from app.models.salas import EdificiosResponse, ReservaResponse, Reserva, AsistenciaResponse, AsistenciaRequest
 router = APIRouter(prefix="/salas", tags=["Salas"])
 
@@ -201,6 +201,5 @@ def marcar_asistencia(reserva: AsistenciaRequest):
     except Error as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
-        cursor.close()
-        conn.close()
+        close_connection(cursor, conn)
 
