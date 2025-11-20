@@ -1,11 +1,11 @@
 from fastapi import APIRouter
-from pydantic.v1.errors import cls_kwargs
 
 from app.database import get_connection, close_connection
 
 router = APIRouter(prefix="/analytics", tags=["Analytics"])
 
-@router.get("salas-mas-reservadas")
+
+@router.get("/salas-mas-reservadas")
 def get_sala_mas_reservada():
     conn = None
     cursor = None
@@ -30,8 +30,11 @@ def get_sala_mas_reservada():
             """
         )
 
+        return cursor.fetchall()
+
     finally:
         close_connection(cursor, conn)
+
 
 @router.get("/turnos-mas-demandados")
 def get_turnos_mas_demandados():
@@ -58,8 +61,11 @@ def get_turnos_mas_demandados():
             """
         )
 
+        return cursor.fetchall()
+
     finally:
-       close_connection(cursor, conn)
+        close_connection(cursor, conn)
+
 
 @router.get("/promedio-participantes-sala")
 def get_promedio_participantes_sala():
@@ -87,8 +93,11 @@ def get_promedio_participantes_sala():
             """
         )
 
+        return cursor.fetchall()
+
     finally:
         close_connection(cursor, conn)
+
 
 @router.get("/cantidad-reservas-carrera-y-facultad")
 def get_cantidad_reservas_por_carrera_y_facultad():
@@ -110,8 +119,11 @@ def get_cantidad_reservas_por_carrera_y_facultad():
             """
         )
 
+        return cursor.fetchall()
+
     finally:
         close_connection(cursor, conn)
+
 
 @router.get("/porcentaje-ocupacion-salas-edificio")
 def get_porcentaje_ocupacion_sala_por_edificio():
@@ -140,8 +152,11 @@ def get_porcentaje_ocupacion_sala_por_edificio():
             """
         )
 
+        return cursor.fetchall()
+
     finally:
         close_connection(cursor, conn)
+
 
 @router.get("/cantidad-reservas-asistencias-tipo-usuario")
 def get_cantidad_reservas_y_asistencias_tipo_usuario():
@@ -167,8 +182,11 @@ def get_cantidad_reservas_y_asistencias_tipo_usuario():
             """
         )
 
+        return cursor.fetchall()
+
     finally:
         close_connection(cursor, conn)
+
 
 @router.get("/cantidad-sanciones-tipo-usuario")
 def get_cantidad_sanciones_por_tipo_usuario():
@@ -188,8 +206,11 @@ def get_cantidad_sanciones_por_tipo_usuario():
             """
         )
 
+        return cursor.fetchall()
+
     finally:
         close_connection(cursor, conn)
+
 
 @router.get("/porcentaje-reservas-efectivamente-utilizadas")
 def get_porcentaje_reservas_efectivamente_utilizadas():
@@ -220,8 +241,11 @@ def get_porcentaje_reservas_efectivamente_utilizadas():
             """
         )
 
+        return cursor.fetchall()
+
     finally:
         close_connection(cursor, conn)
+
 
 @router.get("/salas-menos-reservadas")
 def get_salas_menos_reservadas():
@@ -248,8 +272,11 @@ def get_salas_menos_reservadas():
             """
         )
 
+        return cursor.fetchall()
+
     finally:
         close_connection(cursor, conn)
+
 
 @router.get("/turnos-menos-demandados")
 def get_turnos_menos_demandados():
@@ -276,8 +303,11 @@ def get_turnos_menos_demandados():
             """
         )
 
+        return cursor.fetchall()
+
     finally:
-       close_connection(cursor, conn)
+        close_connection(cursor, conn)
+
 
 @router.get("/cantidad-reservas-por-sala")
 def get_cantidad_reservas_por_sala():
@@ -299,6 +329,8 @@ def get_cantidad_reservas_por_sala():
                 GROUP BY s.nombre_sala
             """
         )
+
+        return cursor.fetchall()
 
     finally:
         close_connection(cursor, conn)
