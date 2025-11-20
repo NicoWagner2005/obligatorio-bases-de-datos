@@ -147,3 +147,88 @@ def get_porcentaje_ocupacion_sala_por_edificio():
     finally:
         cursor.close()
         conn.close()
+
+
+@router.get("/cantidad-reservas-asistencias-tipo-usuario")
+def get_cantidad_reservas_y_asistencias_tipo_usuario():
+    conn = None
+    cursor = None
+
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+                SELECT
+                    ppa.rol,
+                    COUNT(DISTINCT r.id_reserva) AS cantidad_reservas,
+                    SUM(COALESCE(rp.asistencia, 0)) AS cantidad_asistencias
+                FROM reserva r
+                JOIN reserva_participante rp
+                    ON r.id_reserva = rp.id_reserva
+                JOIN participante_programa_academico ppa
+                    ON ppa.ci_participante = rp.ci_participante
+                GROUP BY ppa.rol;
+            """
+        )
+
+    finally:
+        cursor.close()
+        conn.close()
+
+@router.get("/cantidad-sanciones-tipo-usuario")
+def get_cantidad_sanciones_por_tipo_usuario():
+    conn = None
+    cursor = None
+
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+                SELECT ppa.rol, COUNT(*) AS cantidad_sanciones
+                FROM participante_programa_academico ppa
+                JOIN sancion_participante sp ON ppa.ci_participante = sp.ci_participante
+                GROUP BY ppa.rol
+            """
+        )
+
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@router.get("/porcentaje-reservas-efectivamente-utilizadas")
+def get_porcentaje_reservas_efectivamente_utilizadas():
+    conn = None
+    cursor = None
+
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+                SELECT
+                    ROUND(
+                        (
+                            SELECT COUNT(DISTINCT r2.id_reserva)
+                            FROM reserva r2
+                            JOIN reserva_participante rp2
+                                ON r2.id_reserva = rp2.id_reserva
+                            WHERE rp2.asistencia >= 1
+                        )
+                        /
+                        COUNT(DISTINCT r.id_reserva)
+                        * 100,
+                        2
+                    ) AS porcentaje_reservas_utilizadas
+                FROM reserva r;
+            """
+        )
+
+    finally:
+        cursor.close()
+        conn.close()
