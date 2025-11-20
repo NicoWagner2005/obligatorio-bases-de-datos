@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from datetime import date
-from app.database import get_connection
+from app.database import get_connection, close_connection
 from mysql.connector import Error
 
 router = APIRouter(prefix="/sanciones", tags=["Sanciones"])
@@ -30,8 +30,7 @@ def get_sanciones(ci_participante: str):
     except Error as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
-        cursor.close()
-        conn.close()
+        close_connection(cursor, conn)
 
 
 # ============================================================
@@ -61,8 +60,7 @@ def validar_sancion(ci_participante: str):
     except Error as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
-        cursor.close()
-        conn.close()
+        close_connection(cursor, conn)
 
 
 # ============================================================
@@ -88,8 +86,7 @@ def crear_sancion(ci_participante: str, fecha_inicio: date, fecha_fin: date):
     except Error as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
-        cursor.close()
-        conn.close()
+        close_connection(cursor, conn)
 
 
 # ============================================================
@@ -116,8 +113,7 @@ def borrar_sancion(ci: str, fecha_inicio: date):
     except Error as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
-        cursor.close()
-        conn.close()
+        close_connection(cursor, conn)
 
 
 # ============================================================
@@ -148,5 +144,4 @@ def modificar_sancion(ci_participante: str, fecha_inicio: date, nueva_fecha_fin:
     except Error as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
-        cursor.close()
-        conn.close()
+        close_connection(cursor, conn)

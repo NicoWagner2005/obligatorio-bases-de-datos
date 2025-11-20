@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
-from app.database import get_connection
+from app.database import get_connection, close_connection
 from app.models.auth import RegistrationCredentials, RegistrationResponse, LoginResponse, LoginCredentials
 from app.utils.hash import hash_password
 import bcrypt
@@ -50,8 +50,7 @@ def register_user(credentials: RegistrationCredentials):
         return {"message": "Usuario registrado exitosamente"}
 
     finally:
-        cursor.close()
-        conn.close()
+        close_connection(cursor, conn)
 
 
 @router.post("/login", response_model=LoginResponse)
@@ -110,5 +109,4 @@ def login_user(credentials: LoginCredentials):
         }
 
     finally:
-        cursor.close()
-        conn.close()
+        close_connection(cursor, conn)

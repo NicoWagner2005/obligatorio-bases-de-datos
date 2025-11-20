@@ -2,88 +2,12 @@ from datetime import date, timedelta
 from typing import Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException, status
-from pydantic import BaseModel
 
-from app.database import get_connection
+from app.database import get_connection, close_connection
 from app.utils.hash import hash_password
-
-
+from app.models.admin import *
 router = APIRouter(prefix="/admin", tags=["Administrativo"])
 
-
-class ParticipanteCreate(BaseModel):
-    ci: str
-    nombre: str
-    apellido: str
-    email: str
-    password: str
-    id_programa: int
-    rol: str
-
-
-class ParticipanteUpdate(BaseModel):
-    nombre: Optional[str] = None
-    apellido: Optional[str] = None
-    email: Optional[str] = None
-    password: Optional[str] = None
-    id_programa: Optional[int] = None
-    rol: Optional[str] = None
-
-
-class SalaCreate(BaseModel):
-    nombre_sala: str
-    id_edificio: int
-    capacidad: int
-    tipo_sala: str
-
-
-class SalaUpdate(BaseModel):
-    nombre_sala: Optional[str] = None
-    id_edificio: Optional[int] = None
-    capacidad: Optional[int] = None
-    tipo_sala: Optional[str] = None
-
-
-class ReservaCreate(BaseModel):
-    id_sala: int
-    fecha: date
-    id_turno: int
-    participantes: List[str]
-
-
-class ReservaUpdate(BaseModel):
-    id_sala: Optional[int] = None
-    fecha: Optional[date] = None
-    id_turno: Optional[int] = None
-    participantes: Optional[List[str]] = None
-
-
-class AsistenciaRegistro(BaseModel):
-    ci_participante: str
-    asistencia: bool
-
-
-class AsistenciaPayload(BaseModel):
-    registros: List[AsistenciaRegistro]
-
-
-class SancionCreate(BaseModel):
-    ci_participante: str
-    fecha_inicio: date
-    fecha_fin: date
-
-
-class SancionUpdate(BaseModel):
-    ci_participante: str
-    fecha_inicio: date
-    nueva_fecha_fin: date
-
-
-def _close(cursor, conn) -> None:
-    if cursor:
-        cursor.close()
-    if conn:
-        conn.close()
 
 
 def _validar_ci(ci: str) -> None:
@@ -323,7 +247,7 @@ def crear_participante(payload: ParticipanteCreate):
         conn.commit()
         return {"message": "Participante creado"}
     finally:
-        _close(cursor, conn)
+        close_connection(cursor, conn)
 
 
 @router.put("/participantes/{ci}")
@@ -381,7 +305,7 @@ def actualizar_participante(ci: str, payload: ParticipanteUpdate):
         conn.commit()
         return {"message": "Participante actualizado"}
     finally:
-        _close(cursor, conn)
+        close_connection(cursor, conn)
 
 
 @router.delete("/participantes/{ci}")
@@ -420,7 +344,7 @@ def eliminar_participante(ci: str):
         conn.commit()
         return {"message": "Participante eliminado"}
     finally:
-        _close(cursor, conn)
+        close_connection(cursor, conn)
 
 
 # Salas
@@ -454,7 +378,7 @@ def crear_sala(payload: SalaCreate):
         conn.commit()
         return {"message": "Sala creada"}
     finally:
-        _close(cursor, conn)
+        close_connection(cursor, conn)
 
 
 @router.put("/salas/{id_sala}")
@@ -496,7 +420,7 @@ def actualizar_sala(id_sala: int, payload: SalaUpdate):
         conn.commit()
         return {"message": "Sala actualizada"}
     finally:
-        _close(cursor, conn)
+        close_connection(cursor, conn)
 
 
 @router.delete("/salas/{id_sala}")
@@ -524,7 +448,7 @@ def eliminar_sala(id_sala: int):
         conn.commit()
         return {"message": "Sala eliminada"}
     finally:
-        _close(cursor, conn)
+        close_connection(cursor, conn)
 
 
 # Reservas
@@ -551,7 +475,7 @@ def crear_reserva(payload: ReservaCreate):
         conn.commit()
         return {"message": "Reserva creada", "id_reserva": reserva_id}
     finally:
-        _close(cursor, conn)
+        close_connection(cursor, conn)
 
 
 @router.put("/reservas/{id_reserva}")
@@ -604,7 +528,7 @@ def actualizar_reserva(id_reserva: int, payload: ReservaUpdate):
         conn.commit()
         return {"message": "Reserva actualizada"}
     finally:
-        _close(cursor, conn)
+        close_connection(cursor, conn)
 
 
 @router.post("/reservas/{id_reserva}/cancelar")
@@ -625,7 +549,7 @@ def cancelar_reserva(id_reserva: int):
         conn.commit()
         return {"message": "Reserva cancelada"}
     finally:
-        _close(cursor, conn)
+        close_connection(cursor, conn)
 
 
 @router.put("/reservas/{id_reserva}/asistencia")
@@ -672,7 +596,7 @@ def registrar_asistencia(id_reserva: int, payload: AsistenciaPayload):
         conn.commit()
         return {"message": "Asistencia registrada", "presentes": presentes}
     finally:
-        _close(cursor, conn)
+        close_connection(cursor, conn)
 
 
 # Sanciones
@@ -696,7 +620,7 @@ def crear_sancion(payload: SancionCreate):
         conn.commit()
         return {"message": "Sanción creada"}
     finally:
-        _close(cursor, conn)
+        close_connection(cursor, conn)
 
 
 @router.put("/sanciones")
@@ -731,7 +655,7 @@ def actualizar_sancion(payload: SancionUpdate):
         conn.commit()
         return {"message": "Sanción actualizada"}
     finally:
-        _close(cursor, conn)
+        close_connection(cursor, conn)
 
 
 @router.delete("/sanciones/{ci}/{fecha_inicio}")
@@ -751,4 +675,4 @@ def eliminar_sancion(ci: str, fecha_inicio: date):
             raise HTTPException(status.HTTP_404_NOT_FOUND, "La sanción no existe")
         return {"message": "Sanción eliminada"}
     finally:
-        _close(cursor, conn)
+        close_connection(cursor, conn)

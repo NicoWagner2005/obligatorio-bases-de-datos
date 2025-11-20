@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from mysql.connector import IntegrityError
 from datetime import date
-from app.database import get_connection
+from app.database import get_connection, close_connection
 from app.models.salas import EdificiosResponse, ReservaResponse, Reserva
 
 router = APIRouter(prefix="/salas", tags=["Salas"])
@@ -48,8 +48,7 @@ def get_salas():
         return {"edificios": list(edificios.values())}
 
     finally:
-        cursor.close()
-        conn.close()
+        close_connection(cursor, conn)
 
 
 @router.post("/reservar", response_model=ReservaResponse)
@@ -154,5 +153,4 @@ def reservar_sala(datos_reserva: Reserva):
         )
 
     finally:
-        cursor.close()
-        conn.close()
+        close_connection(cursor, conn)
