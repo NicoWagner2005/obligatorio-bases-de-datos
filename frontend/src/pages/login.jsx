@@ -23,14 +23,17 @@ export default function Login() {
             if (!res.ok) {
                 throw Error(`HTTP Error: ${res.status} ${res.statusText}`);
             }
+            const data = await res.json();
 
-            const data = await res.json()
-            console.log(data.user_id) //borrar despues console log
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("admin", data.admin ? "true" : "false");
 
-            // GUARDAR USER_ID PARA USAR EN LA APP
-            // seria algo tipo : user_id = data.user_id
+            if (data.admin) {
+                navigate("/admin/menu");
+            } else {
+                navigate("/menu"); // menú normal
+            }
 
-            navigate("/menu")
 
         } catch (err) {
             throw Error(`Error fetching login data: ${err.message ?? err} `);

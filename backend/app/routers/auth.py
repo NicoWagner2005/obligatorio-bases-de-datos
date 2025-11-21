@@ -8,6 +8,8 @@ from app.models.auth import LoginCredentials, LoginResponse, RegistrationCredent
 from app.utils.hash import hash_password
 from app.utils.jwt import create_access_token
 
+from app.config import ADMIN_EMAIL
+
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
@@ -100,26 +102,20 @@ def login_user(credentials: LoginCredentials):
                 detail="Usuario o contraseña incorrectos",
             )
 
-        admin_email = os.getenv("ADMIN_EMAIL", "fmachado@ucu.edu.uy")
-        role = "admin" if credentials.email == admin_email else "user"
+        es_admin = (participante["email"] == ADMIN_EMAIL)
+
         token = create_access_token({
-            "sub": str(participante["user_id"]),
-            "email": credentials.email,
-            "role": role,
+            "user_id": participante["user_id"],
+            "email": participante["email"],
+            "admin": es_admin
         })
 
         # 4️⃣ Login OK
         return {
             "message": "Login exitoso",
+            "user_id": participante["user_id"],
             "token": token,
-            "role": role,
-            "user": {
-                "user_id": participante["user_id"],
-                "ci": participante["ci"],
-                "nombre": participante["nombre"],
-                "apellido": participante["apellido"],
-                "email": credentials.email
-            }
+            "admin": es_admin
         }
 
     finally:
