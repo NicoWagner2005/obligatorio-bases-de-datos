@@ -1,12 +1,14 @@
 from datetime import date, timedelta
 from typing import Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.database import get_connection, close_connection
-from app.utils.hash import hash_password
+from app.database import close_connection, get_connection
 from app.models.admin import *
-router = APIRouter(prefix="/admin", tags=["Administrativo"])
+from app.utils.hash import hash_password
+from app.utils.jwt import require_admin
+
+router = APIRouter(prefix="/admin", tags=["Administrativo"], dependencies=[Depends(require_admin)])
 
 
 
