@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Navigate } from "react-router-dom"
 import "./login.css"
 import { useNavigate } from 'react-router-dom';
-import API_URL from "@/constants/api";
+
 
 
 
@@ -33,7 +33,7 @@ export default function Login() {
 
     const IniciarSesion = (usuario) => {
     navigate("/menu", { state: { usuario } })
-    }
+    }                                               //Inicio de sesion hard-codeado para progresar con el front; CAMBIAR!!!!!!!!
 
     const intentarIniciarSesion = (e) => {           
         fetchLoginData(usuario , contraseña)
@@ -57,7 +57,7 @@ export default function Login() {
               <input className='inputlogin' type="text" placeholder='usuario'value={usuario}onChange={(e) => setUsuario(e.target.value)}/>
               <input className='inputlogin' type="password" placeholder='contraseña'value={contraseña}onChange={(e) => setContraseña(e.target.value)}/>
               <p className='errorInicioSesion'  style={{opacity: error ? 1 : 0}}>El usuario o contraseña son incorrectos</p>
-              <button className='botonsesion' onClick={intentarIniciarSesion}>Iniciar sesión</button>
+              <button className='botonsesion' onClick={() => IniciarSesion(usuario)}>Iniciar sesión</button>
             </form>
           </div>
           
