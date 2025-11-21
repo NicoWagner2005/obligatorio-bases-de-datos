@@ -8,7 +8,8 @@ router = APIRouter(prefix="/salas", tags=["Salas"])
 
 @router.get("/", response_model=EdificiosResponse)
 def get_salas():
-
+    conn = None
+    cursor = None
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
@@ -53,6 +54,8 @@ def get_salas():
 
 @router.post("/reservar", response_model=ReservaResponse)
 def reservar_sala(datos_reserva: Reserva):
+    conn = None
+    cursor = None
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
@@ -173,6 +176,11 @@ def marcar_asistencia(reserva: AsistenciaRequest):
             """, (reserva.id_reserva,)
         )
 
+        asistencia_row = cursor.fetchone()
+
+        if asistencia_row is None:
+            raise HTTPException(status_code=404, detail="Reserva no encontrada")
+
         cursor.execute(
             """
                 SELECT s.capacidad
@@ -180,9 +188,13 @@ def marcar_asistencia(reserva: AsistenciaRequest):
                 WHERE r.id_reserva = %s
             """, (reserva.id_reserva,)
         )
-        capacidad = cursor.fetchone()["capacidad"]
+        capacidad_row = cursor.fetchone()
 
-        asistencia = cursor.fetchone()["asistencia"]
+        if capacidad_row is None:
+            raise HTTPException(status_code=404, detail="Sala no encontrada para la reserva")
+
+        capacidad = capacidad_row["capacidad"]
+        asistencia = asistencia_row["asistencia"] or 0
 
         if asistencia + 1 > capacidad:
             raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, detail="La cantidad de participantes excede la capacidad de la sala")
