@@ -4,7 +4,7 @@ import Login from './pages/login.jsx';
 import Admin from './pages/admin.jsx';
 import Menu from './pages/menudeusuario.jsx';
 import ConsultarReservas from './pages/consultarreservas.jsx';
-import ReservarSalon from './pages/reservarsalon.jsx'
+import ReservarSalon from './pages/reservarsala.jsx'
 import ConsultarSanciones from './pages/consultarsanciones.jsx'
 
 

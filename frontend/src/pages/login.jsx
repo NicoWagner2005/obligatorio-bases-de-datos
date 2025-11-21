@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Navigate } from "react-router-dom"
 import "./login.css"
 import { useNavigate } from 'react-router-dom';
-import API_URL from "@/constants/api";
 
 
 
@@ -15,29 +14,34 @@ export default function Login() {
     const navigate = useNavigate()
 
     const fetchLoginData = async (email, password) => {
-    const res = await fetch(`${API_URL}/auth/login`, {
+  const res = await fetch("http://127.0.0.1:8000/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
-    });
-    if (!res.ok) {
-      setError(true)
-      throw new Error("Credenciales incorrectas");
-      
-    }
-    if (res.ok){
-      setError(false)
-      IniciarSesion()}
-      return res.json();
-    };
+  });
 
-    const IniciarSesion = (usuario) => {
-    navigate("/menu", { state: { usuario } })
-    }
+  if (!res.ok) {
+    setError(true);
+    throw new Error("Credenciales incorrectas");
+  }
 
-    const intentarIniciarSesion = (e) => {           
-        fetchLoginData(usuario , contraseña)
-    }
+  setError(false);
+  const data = await res.json();  // 👈 acá obtenés el user + token
+  return data;
+};
+
+const IniciarSesion = (usuario) => {
+  navigate("/menu", { state: { usuario } });
+};
+
+const intentarIniciarSesion = async (e) => { 
+  try {
+    const data = await fetchLoginData(usuario, contraseña);
+    IniciarSesion(data.user);  // 👈 enviar el usuario devuelto por backend
+  } catch (err) {
+    console.error(err);
+  }
+};
 
     return (
       <div className="maincontainer">
