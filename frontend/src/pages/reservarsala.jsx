@@ -13,7 +13,7 @@ export default function ReservarSala() {
             <div className="header">
                 <img src="/assets/images/logo-ucu-blanco.png" alt="logo UCU" className='logoUCU'/>
                 <div className="volver">
-                    <button className="botonVolver" onClick={ () =>navigate(`/menu/guille`)}>         
+                    <button className="botonVolver" onClick={ () =>navigate(`/menu`)}>         
                         <img className="imagenVolver" src="../assets/images/volver.png"/>   
                         Volver
                     </button>  

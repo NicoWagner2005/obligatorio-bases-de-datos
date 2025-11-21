@@ -62,7 +62,7 @@ El sistema deberá generar consultas para análisis y BI, incluyendo:
 - Porcentaje de ocupación de salas por edificio  
 - Cantidad de reservas y asistencias (por tipo de usuario)  
 - Cantidad de sanciones (por tipo de usuario)  
-- Porcentaje de reservas efectivamente utilizadas  
+- Porcentaje de reservas efectivamente utilizadas 
 - **+3 consultas adicionales sugeridas por el equipo**
 
 ---
