@@ -2,7 +2,7 @@ from fastapi import Header, HTTPException, Depends
 from jose import jwt, JWTError
 import time
 
-SECRET = "supersecret"    # idealmente poner en .env
+SECRET = "supersecret"
 ALGORITHM = "HS256"
 
 

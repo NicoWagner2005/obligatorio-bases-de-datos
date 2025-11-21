@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from mysql.connector import IntegrityError, Error
 from datetime import date
 from app.database import get_connection, close_connection
 from app.models.salas import EdificiosResponse, ReservaResponse, Reserva, AsistenciaResponse, AsistenciaRequest
+from app.utils.jwt import get_current_user
 router = APIRouter(prefix="/salas", tags=["Salas"])
 
 
@@ -159,6 +160,41 @@ def reservar_sala(datos_reserva: Reserva):
 
     finally:
         close_connection(cursor, conn)
+
+@router.get("/mis-reservas")
+def get_mis_reservas(user = Depends(get_current_user)):
+    user_id = user["user_id"]  # solo esto viene en el token
+
+    conn = None
+    cursor = None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # 1️⃣ Obtener la CI real usando el user_id
+        cursor.execute("SELECT ci FROM participante WHERE user_id = %s", (user_id,))
+        row = cursor.fetchone()
+
+        if not row:
+            raise HTTPException(404, "Usuario no encontrado")
+
+        ci_participante = row["ci"]
+
+        # 2️⃣ Obtener las reservas asociadas a esa CI
+        cursor.execute("""
+            SELECT *
+            FROM reserva r 
+            JOIN reserva_participante rp ON r.id_reserva = rp.id_reserva
+            WHERE rp.ci_participante = %s
+        """, (ci_participante,))
+
+        reservas = cursor.fetchall()
+
+        return {"reservas": reservas}
+
+    finally:
+        close_connection(cursor, conn)
+
 
 @router.put("/asistir", response_model=AsistenciaResponse)
 def marcar_asistencia(reserva: AsistenciaRequest):
