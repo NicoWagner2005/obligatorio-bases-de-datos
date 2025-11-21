@@ -8,6 +8,7 @@ router = APIRouter(prefix="/salas", tags=["Salas"])
 
 @router.get("/", response_model=EdificiosResponse)
 def get_salas():
+
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)

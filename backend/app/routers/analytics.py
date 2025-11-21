@@ -5,7 +5,7 @@ from app.database import get_connection, close_connection
 
 router = APIRouter(prefix="/analytics", tags=["Analytics"])
 
-@router.get("salas-mas-reservadas")
+@router.get("/salas-mas-reservadas")
 def get_sala_mas_reservada():
     conn = None
     cursor = None
@@ -29,6 +29,8 @@ def get_sala_mas_reservada():
                 ORDER BY r.total_reservas DESC;
             """
         )
+
+        return cursor.fetchall()
 
     finally:
         close_connection(cursor, conn)
@@ -57,6 +59,8 @@ def get_turnos_mas_demandados():
                 ORDER BY r.total_reservas DESC;
             """
         )
+
+        return cursor.fetchall()
 
     finally:
        close_connection(cursor, conn)
@@ -87,6 +91,7 @@ def get_promedio_participantes_sala():
             """
         )
 
+        return cursor.fetchall()
     finally:
         close_connection(cursor, conn)
 
@@ -109,6 +114,8 @@ def get_cantidad_reservas_por_carrera_y_facultad():
                 GROUP BY f.nombre, pa.nombre_programa
             """
         )
+
+        return cursor.fetchall()
 
     finally:
         close_connection(cursor, conn)
@@ -140,6 +147,8 @@ def get_porcentaje_ocupacion_sala_por_edificio():
             """
         )
 
+        return cursor.fetchall()
+
     finally:
         close_connection(cursor, conn)
 
@@ -166,7 +175,7 @@ def get_cantidad_reservas_y_asistencias_tipo_usuario():
                 GROUP BY ppa.rol;
             """
         )
-
+        return cursor.fetchall()
     finally:
         close_connection(cursor, conn)
 
@@ -187,7 +196,7 @@ def get_cantidad_sanciones_por_tipo_usuario():
                 GROUP BY ppa.rol
             """
         )
-
+        return cursor.fetchall()
     finally:
         close_connection(cursor, conn)
 
@@ -219,7 +228,7 @@ def get_porcentaje_reservas_efectivamente_utilizadas():
                 FROM reserva r;
             """
         )
-
+        return cursor.fetchall()
     finally:
         close_connection(cursor, conn)
 
