@@ -98,14 +98,7 @@ def login_user(credentials: LoginCredentials):
         # 4️⃣ Login OK
         return {
             "message": "Login exitoso",
-            "token": "jwt_token_aqui",
-            "user": {
-                "user_id": participante["user_id"],
-                "ci": participante["ci"],
-                "nombre": participante["nombre"],
-                "apellido": participante["apellido"],
-                "email": credentials.email
-            }
+            "user_id": participante["user_id"],
         }
 
     finally:
