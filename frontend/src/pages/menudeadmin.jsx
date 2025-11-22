@@ -4,6 +4,13 @@ import { Navigate, useNavigate } from "react-router-dom"
 export default function MenuAdmin(){
 
 
+    const cerrarSesion = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("admin");
+        localStorage.removeItem("user_id");
+        navigate("/login");
+    }
+ 
     const navigate = useNavigate()
 
     return(
@@ -12,7 +19,7 @@ export default function MenuAdmin(){
             <div className="headeradmin">
                     <img src="/assets/images/logo-ucu-blanco.png" alt="logo UCU" className='logoUCUadmin'/>
                 <div className="cerrarSesionadmin">
-                    <button className="botonCerrarSesionadmin" onClick={ () =>navigate("/login")}>
+                    <button className="botonCerrarSesionadmin" onClick={ () => cerrarSesion()}>
                         <img className="imagenCerrarSesionadmin" src="../assets/images/cerrarSesion.png"/>
                         Cerrar sesión
                     </button>

@@ -4,21 +4,31 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function Menu(){
     const location = useLocation()
-    const usuario = location.state?.usuario
+    const userid = location.state?.userid
     const navigate = useNavigate()
+    const token = localStorage.getItem("token");
+
     
+
+    
+    const cerrarSesion = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("admin");
+        localStorage.removeItem("user_id");
+        navigate("/login");
+    }
 
     const gotoReservarSala = () =>
     {
-        navigate("/reservarsala")
+        navigate("/reservarsala", state={userid:userid})
     }
     const gotoConsultarReservas = () =>
     {
-        navigate("/consultarreservas")
+        navigate("/consultarreservas", state={userid:userid})
     }
     const gotoConsultarSanciones = () =>
     {
-        navigate("/consultarsanciones")
+        navigate("/consultarsanciones", state={userid:userid})
     }
 
     return(
@@ -26,7 +36,7 @@ export default function Menu(){
             <div className="header">
                     <img src="/assets/images/logo-ucu-blanco.png" alt="logo UCU" className='logoUCU'/>
                 <div className="cerrarSesion">
-                    <button className="botonCerrarSesion" onClick={ () =>navigate("/login")}>
+                    <button className="botonCerrarSesion" onClick={ () =>cerrarSesion()}>
                         <img className="imagenCerrarSesion" src="../assets/images/cerrarSesion.png"/>
                         Cerrar sesión
                     </button>

@@ -49,7 +49,7 @@ export default function CosultarSanciones() {
                         </div>
                     </div>
                     <div style={{"alignItems":"center","justifyContent":"center", "display":"flex", "flexDirection":"column"}}>
-                        <h1>{}</h1>
+                        <h1>{fechaFin}</h1>
                     </div>
                 </div>
                 )    

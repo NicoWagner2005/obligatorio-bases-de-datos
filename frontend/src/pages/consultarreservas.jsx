@@ -4,10 +4,10 @@ import './consultarreservas.css'
 import Reserva from "../components/reserva"
 
 export default function consultarReservas() {
-
+    
     const navigate = useNavigate()
-    const [Activas, setActivas] = useState([])
-    const [Pasadas, setPasadas] = useState([])
+    const [reservas, setReservas] = useState([])
+    
 
 
         return(
