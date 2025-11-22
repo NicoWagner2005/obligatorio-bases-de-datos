@@ -8,8 +8,19 @@ Con el contenedor levantado y configurado, nos conectamos a la base de datos des
 
 Con las tablas ya creadas pasamos a crear los datos que vamos a usar para la verificación y demostración de nuestra aplicación. Insertamos en sus respectivas tablas y verificamos que este todo correcto y que nos permita su correcto uso a futuro.
 
+En un principio la tabla login tenía correo y contraseña pero al final decidimos cambiarla: decidimos que tenga un id de usuario como primary key que sea foreign key de los participantes, y cada contraseña asociada al id de usuario. Esta decisión fue porque resulta más intuitivo tener todos los datos del participante, con el correo incluido en la tabla participante y que login solo tenga el unico dato sensible perteneciente al usuario que no puede tener la tabla participante, la contraseña.
 
-fuentes: https://docs.docker.com - https://fastapi.tiangolo.com - https://pypi.org/project/bcrypt/ - https://fastapi.tiangolo.com/reference/apirouter/#fastapi.APIRouter
+Comenzamos con el backend. En un principio mientras aprendíamos las básicas de fastAPI teníamos todo en el main.py, dividido por comentarios. Según fuimos sintiendonos más cómodos y el el proyecto escalaba, empezamos a ordenar la aplicación de otra manera, siguiendo la estructura recomendada en la documentación de fastAPI, dividiendo el ruteo en carpetas y haciendo uso del módulo APIRouter, y utilizando pydantic para definir los modelos de request y de respuesta, para hacer más sencilla la conexón posterior con el frontend.
+
+Para los endpoints decidimos que sigan todos una estructura: llamada a la función de conexión, bloque try con la query y un finally con el cierre del cursor y de la conexión.
+
+Dividimos los endpoints por área: auth con los endpoints de registro y login, salas con los relacionados con las salas, ya sea para ver las salas, para reservar o marcar asistencia, sanciones con todo lo relacionado a sanciones del usuario, analytics con las consultas para el análisis de datos y admin con todas las acciones relacionadas a los administradores.
+
+Para el login utilizamos la librería bcrypt para hashear la contraseña del usuario, guardando la contraseña hasheada en la base de datos, mucho más seguro que simplemente usar usuario y contraseña sin hash.
+
+Hicimos los endpoints para las consultas para análisis y BI y como las 3 consultas adicionales agregamos: salas menos reservadas, turnos menos demandados y la cantidad de reservas por sala.
+
+fuentes: https://docs.docker.com - https://fastapi.tiangolo.com - https://pypi.org/project/bcrypt/ - https://fastapi.tiangolo.com/reference/apirouter/#fastapi.APIRouter - https://www.w3schools.com
 --------------------------
 ## FRONTEND:
 

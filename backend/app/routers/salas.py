@@ -1,14 +1,16 @@
-from fastapi import APIRouter, HTTPException, status
-from mysql.connector import IntegrityError
+from fastapi import APIRouter, HTTPException, status, Depends
+from mysql.connector import IntegrityError, Error
 from datetime import date
-from app.database import get_connection
-from app.models.salas import EdificiosResponse, ReservaResponse, Reserva
-
+from app.database import get_connection, close_connection
+from app.models.salas import EdificiosResponse, ReservaResponse, Reserva, AsistenciaResponse, AsistenciaRequest
+from app.utils.jwt import get_current_user
 router = APIRouter(prefix="/salas", tags=["Salas"])
 
 
 @router.get("/", response_model=EdificiosResponse)
 def get_salas():
+    conn = None
+    cursor = None
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
@@ -48,12 +50,13 @@ def get_salas():
         return {"edificios": list(edificios.values())}
 
     finally:
-        cursor.close()
-        conn.close()
+        close_connection(cursor, conn)
 
 
 @router.post("/reservar", response_model=ReservaResponse)
 def reservar_sala(datos_reserva: Reserva):
+    conn = None
+    cursor = None
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
@@ -87,22 +90,7 @@ def reservar_sala(datos_reserva: Reserva):
 
         tipo_sala = sala["tipo_sala"]
 
-        # 3) Chequear máximo de 2 reservas activas por sala/día
-        cursor.execute("""
-                       SELECT COUNT(*) AS total
-                       FROM reserva
-                       WHERE id_sala = %s
-                         AND fecha = %s
-                         AND estado = 'activa'
-                       """, (datos_reserva.id_sala, datos_reserva.fecha))
 
-        cantidad = cursor.fetchone()["total"]
-
-        if cantidad >= 2:
-            raise HTTPException(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail="Esta sala ya tiene 2 reservas activas para este día"
-            )
 
         # 4) Obtener rol del participante
         cursor.execute("""
@@ -125,7 +113,24 @@ def reservar_sala(datos_reserva: Reserva):
                 detail="Los estudiantes no pueden reservar salas exclusivas"
             )
 
-        # 5) Insertar reserva (UNIQUE controla disponibilidad)
+        # Chequear máximo de 2 reservas activas por sala/día
+        cursor.execute("""
+                       SELECT COUNT(*) AS total
+                       FROM reserva
+                       WHERE id_sala = %s
+                         AND fecha = %s
+                         AND estado = 'activa'
+                       """, (datos_reserva.id_sala, datos_reserva.fecha))
+
+        cantidad = cursor.fetchone()["total"]
+
+        if cantidad >= 2 and rol == "estudiante":
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="Esta sala ya tiene 2 reservas activas para este día"
+            )
+
+        # 5) Insertar reserva (UNIQUE en la base de datos controla disponibilidad)
         cursor.execute("""
                        INSERT INTO reserva(id_sala, fecha, id_turno, estado)
                        VALUES (%s, %s, %s, %s)
@@ -154,5 +159,96 @@ def reservar_sala(datos_reserva: Reserva):
         )
 
     finally:
-        cursor.close()
-        conn.close()
+        close_connection(cursor, conn)
+
+@router.get("/mis-reservas")
+def get_mis_reservas(user = Depends(get_current_user)):
+    user_id = user["user_id"]  # solo esto viene en el token
+
+    conn = None
+    cursor = None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # 1️⃣ Obtener la CI real usando el user_id
+        cursor.execute("SELECT ci FROM participante WHERE user_id = %s", (user_id,))
+        row = cursor.fetchone()
+
+        if not row:
+            raise HTTPException(404, "Usuario no encontrado")
+
+        ci_participante = row["ci"]
+
+        # 2️⃣ Obtener las reservas asociadas a esa CI
+        cursor.execute("""
+            SELECT *
+            FROM reserva r 
+            JOIN reserva_participante rp ON r.id_reserva = rp.id_reserva
+            WHERE rp.ci_participante = %s
+        """, (ci_participante,))
+
+        reservas = cursor.fetchall()
+
+        return {"reservas": reservas}
+
+    finally:
+        close_connection(cursor, conn)
+
+
+@router.put("/asistir", response_model=AsistenciaResponse)
+def marcar_asistencia(reserva: AsistenciaRequest):
+    conn = None
+    cursor = None
+
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+                SELECT asistencia FROM reserva_participante
+                WHERE id_reserva = %s
+            """, (reserva.id_reserva,)
+        )
+
+        asistencia_row = cursor.fetchone()
+
+        if asistencia_row is None:
+            raise HTTPException(status_code=404, detail="Reserva no encontrada")
+
+        cursor.execute(
+            """
+                SELECT s.capacidad
+                FROM sala s JOIN reserva r ON s.id_sala = r.id_sala
+                WHERE r.id_reserva = %s
+            """, (reserva.id_reserva,)
+        )
+        capacidad_row = cursor.fetchone()
+
+        if capacidad_row is None:
+            raise HTTPException(status_code=404, detail="Sala no encontrada para la reserva")
+
+        capacidad = capacidad_row["capacidad"]
+        asistencia = asistencia_row["asistencia"] or 0
+
+        if asistencia + 1 > capacidad:
+            raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, detail="La cantidad de participantes excede la capacidad de la sala")
+
+        cursor.execute(
+            """
+            UPDATE reserva_participante
+            SET asistencia = asistencia + 1
+            WHERE id_reserva = %s
+            """, (reserva.id_reserva,))
+        if cursor.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Reserva no encontrada")
+
+        conn.commit()
+
+        return {"message": "Asistencia marcada exitosamente"}
+    except Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        close_connection(cursor, conn)
+

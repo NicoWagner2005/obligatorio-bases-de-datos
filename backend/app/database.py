@@ -8,3 +8,10 @@ def get_connection():
         database="reservas_ucu"
     )
 
+
+def close_connection(cursor, conn) -> None:
+    if cursor:
+        cursor.close()
+    if conn:
+        conn.close()
+

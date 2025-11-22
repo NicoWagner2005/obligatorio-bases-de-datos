@@ -38,7 +38,6 @@ INSERT INTO programa_academico (nombre_programa, id_facultad, tipo) VALUES
 
 -- PARTICIPANTE_PROGRAMA_ACADEMICO
 INSERT INTO participante_programa_academico (ci_participante, id_programa, rol) VALUES
-('10000001', 1, 'alumno'),
 ('10000002', 2, 'alumno'),
 ('10000003', 3, 'docente'),
 ('10000004', 4, 'alumno');
@@ -78,7 +77,6 @@ INSERT INTO reserva (id_sala, fecha, id_turno, estado) VALUES
 
 -- RESERVA_PARTICIPANTE
 INSERT INTO reserva_participante (ci_participante, id_reserva, fecha_solicitud_reserva, asistencia) VALUES
-('10000001', 1, '2025-10-20', TRUE),
 ('10000002', 1, '2025-10-20', TRUE),
 ('10000003', 2, '2025-10-21', FALSE),
 ('10000004', 3, '2025-10-22', TRUE);
@@ -88,5 +86,4 @@ INSERT INTO reserva_participante (ci_participante, id_reserva, fecha_solicitud_r
 INSERT INTO sancion_participante (ci_participante, fecha_inicio, fecha_fin) VALUES
 ('10000003', '2025-09-01', '2025-10-01'),
 ('10000004', '2025-08-15', '2025-09-15'),
-('10000002', '2025-06-10', '2025-07-10'),
-('10000001', '2025-04-01', '2025-05-01');
+('10000002', '2025-06-10', '2025-07-10');

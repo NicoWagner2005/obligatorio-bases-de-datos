@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from datetime import date
-from app.database import get_connection
+from app.database import get_connection, close_connection
 from mysql.connector import Error
 
 router = APIRouter(prefix="/sanciones", tags=["Sanciones"])
@@ -10,6 +10,8 @@ router = APIRouter(prefix="/sanciones", tags=["Sanciones"])
 # ============================================================
 @router.get("/{ci_participante}")
 def get_sanciones(ci_participante: str):
+    conn = None
+    cursor = None
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
@@ -30,8 +32,7 @@ def get_sanciones(ci_participante: str):
     except Error as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
-        cursor.close()
-        conn.close()
+        close_connection(cursor, conn)
 
 
 # ============================================================
@@ -39,6 +40,8 @@ def get_sanciones(ci_participante: str):
 # ============================================================
 @router.get("/validar_sancion/{ci_participante}")
 def validar_sancion(ci_participante: str):
+    conn = None
+    cursor = None
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
@@ -61,8 +64,7 @@ def validar_sancion(ci_participante: str):
     except Error as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
-        cursor.close()
-        conn.close()
+        close_connection(cursor, conn)
 
 
 # ============================================================
@@ -70,6 +72,8 @@ def validar_sancion(ci_participante: str):
 # ============================================================
 @router.post("/crear")
 def crear_sancion(ci_participante: str, fecha_inicio: date, fecha_fin: date):
+    conn = None
+    cursor = None
     try:
         if fecha_fin <= fecha_inicio:
             raise HTTPException(400, "La fecha fin debe ser mayor a fecha inicio")
@@ -88,8 +92,7 @@ def crear_sancion(ci_participante: str, fecha_inicio: date, fecha_fin: date):
     except Error as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
-        cursor.close()
-        conn.close()
+        close_connection(cursor, conn)
 
 
 # ============================================================
@@ -97,6 +100,8 @@ def crear_sancion(ci_participante: str, fecha_inicio: date, fecha_fin: date):
 # ============================================================
 @router.delete("/{ci}/{fecha_inicio}")
 def borrar_sancion(ci: str, fecha_inicio: date):
+    conn = None
+    cursor = None
     try:
         conn = get_connection()
         cursor = conn.cursor()
@@ -116,8 +121,7 @@ def borrar_sancion(ci: str, fecha_inicio: date):
     except Error as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
-        cursor.close()
-        conn.close()
+        close_connection(cursor, conn)
 
 
 # ============================================================
@@ -125,6 +129,8 @@ def borrar_sancion(ci: str, fecha_inicio: date):
 # ============================================================
 @router.put("/modificar")
 def modificar_sancion(ci_participante: str, fecha_inicio: date, nueva_fecha_fin: date):
+    conn = None
+    cursor = None
     try:
         if nueva_fecha_fin <= fecha_inicio:
             raise HTTPException(400, "La nueva fecha fin debe ser mayor a fecha inicio")
@@ -148,5 +154,4 @@ def modificar_sancion(ci_participante: str, fecha_inicio: date, nueva_fecha_fin:
     except Error as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
-        cursor.close()
-        conn.close()
+        close_connection(cursor, conn)

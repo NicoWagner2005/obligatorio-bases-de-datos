@@ -1,10 +1,17 @@
-from fastapi import APIRouter, HTTPException, status
-from app.database import get_connection
-from app.models.auth import RegistrationCredentials, RegistrationResponse, LoginResponse, LoginCredentials
-from app.utils.hash import hash_password
+import os
+
 import bcrypt
+from fastapi import APIRouter, HTTPException, status
+
+from app.database import get_connection, close_connection
+from app.models.auth import LoginCredentials, LoginResponse, RegistrationCredentials, RegistrationResponse
+from app.utils.hash import hash_password
+from app.utils.jwt import create_access_token
+
+from app.config import ADMIN_EMAIL
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
+
 
 @router.post('/register', response_model=RegistrationResponse)
 def register_user(credentials: RegistrationCredentials):
@@ -18,7 +25,7 @@ def register_user(credentials: RegistrationCredentials):
         # 1️⃣ Verificar si ya existe el correo
         cursor.execute(
             "SELECT * FROM participante WHERE email = %s",
-            (credentials.email,)
+            (credentials.email,),
         )
         user = cursor.fetchone()
 
@@ -34,7 +41,7 @@ def register_user(credentials: RegistrationCredentials):
         # 3️⃣ Crear login → genera user_id
         cursor.execute(
             "INSERT INTO login (contrasena) VALUES (%s)",
-            (hashed_password,)
+            (hashed_password,),
         )
         user_id = cursor.lastrowid
 
@@ -50,8 +57,7 @@ def register_user(credentials: RegistrationCredentials):
         return {"message": "Usuario registrado exitosamente"}
 
     finally:
-        cursor.close()
-        conn.close()
+        close_connection(cursor, conn)
 
 
 @router.post("/login", response_model=LoginResponse)
@@ -66,49 +72,51 @@ def login_user(credentials: LoginCredentials):
         # 1️⃣ Buscar participante por email
         cursor.execute(
             "SELECT user_id, ci, nombre, apellido FROM participante WHERE email = %s",
-            (credentials.email,)
+            (credentials.email,),
         )
         participante = cursor.fetchone()
 
         if not participante:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Usuario o contraseña incorrectos"
+                detail="Usuario o contraseña incorrectos",
             )
 
         # 2️⃣ Buscar hash de contraseña
         cursor.execute(
             "SELECT contrasena FROM login WHERE user_id = %s",
-            (participante["user_id"],)
+            (participante["user_id"],),
         )
         login_data = cursor.fetchone()
 
         if not login_data:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Usuario o contraseña incorrectos"
+                detail="Usuario o contraseña incorrectos",
             )
 
         # 3️⃣ Verificar contraseña
         if not bcrypt.checkpw(credentials.password.encode(), login_data["contrasena"].encode()):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Usuario o contraseña incorrectos"
+                detail="Usuario o contraseña incorrectos",
             )
+
+        es_admin = (participante["email"] == ADMIN_EMAIL)
+
+        token = create_access_token({
+            "user_id": participante["user_id"],
+            "email": participante["email"],
+            "admin": es_admin
+        })
 
         # 4️⃣ Login OK
         return {
             "message": "Login exitoso",
-            "token": "jwt_token_aqui",
-            "user": {
-                "user_id": participante["user_id"],
-                "ci": participante["ci"],
-                "nombre": participante["nombre"],
-                "apellido": participante["apellido"],
-                "email": credentials.email
-            }
+            "user_id": participante["user_id"],
+            "token": token,
+            "admin": es_admin
         }
 
     finally:
-        cursor.close()
-        conn.close()
+        close_connection(cursor, conn)
