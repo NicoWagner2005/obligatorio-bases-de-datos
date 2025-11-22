@@ -19,15 +19,15 @@ export default function Menu(){
 
     const gotoReservarSala = () =>
     {
-        navigate("/reservarsala", state={userid:userid})
+        navigate("/reservarsala",{state:{userid:userid}})
     }
     const gotoConsultarReservas = () =>
     {
-        navigate("/consultarreservas", state={userid:userid})
+        navigate("/consultarreservas",{state:{userid:userid}})
     }
     const gotoConsultarSanciones = () =>
     {
-        navigate("/consultarsanciones", state={userid:userid})
+        navigate("/consultarsanciones",{state:{userid:userid}} )
     }
 
     return(
