@@ -1,22 +1,21 @@
 import "./menudeusuario.css"
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 
 export default function Menu(){
-    const location = useLocation()
-    const userid = location.state?.userid
+
+    const userid = localStorage.getItem("user_id")
     const navigate = useNavigate()
-    const token = localStorage.getItem("token");
 
-    
-
-    
     const cerrarSesion = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("admin");
         localStorage.removeItem("user_id");
         navigate("/login");
     }
+
+
+
 
     const gotoReservarSala = () =>
     {
