@@ -1,12 +1,34 @@
-import { useNavigate } from "react-router-dom"
-import { useState } from "react"
+import { useNavigate, useLocation } from "react-router-dom"
+import { useState, useEffect } from "react"
 import './consultarreservas.css'
-import Reserva from "../components/reserva"
+import API_URL from "@/constants/api"
 
 export default function consultarReservas() {
     
     const navigate = useNavigate()
-    const [reservas, setReservas] = useState([])
+    const [misreservas, setMisreservas] = useState([])
+    const [loading, setLoading] = useState(true)
+    const token = localStorage.getItem("token");
+
+
+    useEffect(() => {
+        const fetchReservas = async () => {
+            try {
+                const res = await fetch(`${API_URL}/mis-reservas`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                })
+                if (res.ok) {
+                    const data = await res.json()
+                    setMisreservas(data)
+                }
+            } catch (error) {
+                console.error("Error al cargar reservas:", error)
+            } finally {
+                setLoading(false)
+            }
+        }
+        fetchReservas()
+    }, [])
     
 
 
@@ -23,10 +45,21 @@ export default function consultarReservas() {
                 </div>
                 <div className="contenido">
                     <div className="cardMostrarReservas">
-                        <li>
-                            
-
-                        </li>
+                        {loading ? (
+                            <p>Cargando reservas...</p>
+                        ) : misreservas.length === 0 ? (
+                            <p>No tienes reservas</p>
+                        ) : (
+                            <ul>
+                                {misreservas.map((reserva) => (
+                                    <li key={reserva.id}>
+                                        <strong>Salón:</strong> {reserva.salon} | 
+                                        <strong> Fecha:</strong> {reserva.fecha} | 
+                                        <strong> Estado:</strong> {reserva.estado}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </div>
                 </div>
             </div>
