@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from datetime import date
-from app.database import get_connection, close_connection
+from ..database import close_connection, get_connection
 from mysql.connector import Error
 
 router = APIRouter(prefix="/sanciones", tags=["Sanciones"])
