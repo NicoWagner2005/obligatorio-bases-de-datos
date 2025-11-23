@@ -71,7 +71,7 @@ def login_user(credentials: LoginCredentials):
 
         # 1️⃣ Buscar participante por email
         cursor.execute(
-            "SELECT user_id, ci, nombre, apellido FROM participante WHERE email = %s",
+            "SELECT user_id, ci, nombre, apellido, email FROM participante WHERE email = %s",
             (credentials.email,),
         )
         participante = cursor.fetchone()

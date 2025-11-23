@@ -130,9 +130,26 @@ Se deberá implementar una base de datos **relacional (MySQL)** con las siguient
 ---
 
 ## 👨‍💻 Autor
-**Nicolás Wagner**  
+**Nicolás Wagner**
 Estudiante de Ingeniería en Informática – UCU
 **Guillermo González**
 Estudiante de Ingeniería en Informática – UCU
 **Bruno Ocampo**
 Estudiante de Ingeniería en Informática – UCU
+
+---
+
+## 🚀 Ejecución rápida con Docker Compose
+
+El repositorio incluye un `docker-compose` que levanta la base de datos MySQL (con schema y datos de prueba), el backend en FastAPI y el frontend en Vite. Para poner todo en marcha:
+
+1. Instala Docker y Docker Compose.
+2. Desde la raíz del proyecto ejecuta:
+
+```bash
+docker compose up --build
+```
+
+3. Accede al frontend en `http://localhost:5173`. La API queda publicada en `http://localhost:8000`.
+
+Los contenedores exponen los puertos 3306 (MySQL), 8000 (API) y 5173 (frontend) para pruebas locales.
