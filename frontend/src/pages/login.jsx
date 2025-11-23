@@ -26,7 +26,7 @@ export default function Login() {
 
             const data = await res.json()
             localStorage.setItem("token", data.token);    //guarda el token
-            localStorage.setItem("admin", data.admin ? "true" : "false");   
+            localStorage.setItem("admin", data.admin ? "true" : "false");
             localStorage.setItem("user_id", data.user_id)  //guarda el userid
             if(data.admin){
               navigate("/menuadmin")

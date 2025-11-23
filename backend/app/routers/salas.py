@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, status, Depends
+from typing import Optional
 from mysql.connector import IntegrityError, Error
 from datetime import date
 from ..database import close_connection, get_connection
@@ -67,6 +68,21 @@ def reservar_sala(datos_reserva: Reserva):
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
+        # Resolver CI a partir del user_id enviado por el frontend
+        cursor.execute(
+            "SELECT ci FROM participante WHERE user_id = %s",
+            (datos_reserva.user_id,)
+        )
+        row = cursor.fetchone()
+
+        if not row:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Usuario no encontrado"
+            )
+
+        ci_participante = row["ci"]
+
         # 1) Verificar límite de 3 reservas activas del participante
         cursor.execute("""
                        SELECT COUNT(*) AS total
@@ -74,7 +90,7 @@ def reservar_sala(datos_reserva: Reserva):
                                 JOIN reserva r ON rp.id_reserva = r.id_reserva
                        WHERE rp.ci_participante = %s
                          AND r.estado = 'activa'
-                       """, (datos_reserva.ci_participante,))
+                       """, (ci_participante,))
 
         total_reservas = cursor.fetchone()["total"]
 
@@ -103,7 +119,7 @@ def reservar_sala(datos_reserva: Reserva):
                        SELECT rol
                        FROM participante_programa_academico
                        WHERE ci_participante = %s
-                       """, (datos_reserva.ci_participante,))
+                       """, (ci_participante,))
 
         participante = cursor.fetchone()
 
@@ -148,7 +164,7 @@ def reservar_sala(datos_reserva: Reserva):
         cursor.execute("""
                        INSERT INTO reserva_participante(id_reserva, fecha_solicitud_reserva, ci_participante)
                        VALUES (%s, %s, %s)
-                       """, (id_reserva, date.today(), datos_reserva.ci_participante))
+                       """, (id_reserva, date.today(), ci_participante))
 
         conn.commit()
 
@@ -168,8 +184,8 @@ def reservar_sala(datos_reserva: Reserva):
         close_connection(cursor, conn)
 
 @router.get("/mis-reservas")
-def get_mis_reservas(user = Depends(get_current_user)):
-    user_id = user["user_id"]  # solo esto viene en el token
+def get_mis_reservas(user_id: Optional[int] = None, user = Depends(get_current_user)):
+    resolved_user_id = user_id if user_id is not None else user["user_id"]  # solo esto viene en el token
 
     conn = None
     cursor = None
@@ -178,7 +194,7 @@ def get_mis_reservas(user = Depends(get_current_user)):
         cursor = conn.cursor(dictionary=True)
 
         # 1️⃣ Obtener la CI real usando el user_id
-        cursor.execute("SELECT ci FROM participante WHERE user_id = %s", (user_id,))
+        cursor.execute("SELECT ci FROM participante WHERE user_id = %s", (resolved_user_id,))
         row = cursor.fetchone()
 
         if not row:

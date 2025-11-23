@@ -57,7 +57,7 @@ export default function ReservarSala() {
 
         // validar sanción
         try {
-            const sancRes = await fetch(`${API_URL}/sanciones/validar_sancion/${userId}`, {
+            const sancRes = await fetch(`${API_URL}/sanciones/validar_sancion_usuario/${userId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             })
             if (sancRes.ok) {
@@ -74,13 +74,12 @@ export default function ReservarSala() {
         // consultar reservas del usuario para la fecha (para aplicar límite 3h/día)
         let existingHours = 0
         try {
-            // Intentamos un endpoint razonable: /mis-reservas?user_id=...
-            const r = await fetch(`${API_URL}/mis-reservas?user_id=${userId}`, {
+            const r = await fetch(`${API_URL}/salas/mis-reservas`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             })
             if (r.ok) {
                 const data = await r.json()
-                existingHours = (data || []).filter(x => x.fecha === fecha).length
+                existingHours = (data.reservas || []).filter(x => x.fecha === fecha).length
             }
         } catch (err) {
             // si falla, no bloqueamos la operación; el backend validará reglas
@@ -101,7 +100,7 @@ export default function ReservarSala() {
                     id_sala: selectedSalaId,
                     fecha: fecha,
                     id_turno: turno,
-                    user_id: userId
+                    user_id: Number(userId)
                 }
                 const res = await fetch(`${API_URL}/salas/reservar`, {
                     method: 'POST',
