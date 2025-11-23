@@ -13,6 +13,13 @@ export default function MenuAdmin(){
  
     const navigate = useNavigate()
 
+    const gotoabms = () => {
+        navigate("/abms")
+    }
+    const gotoreportes = () => {
+        navigate("/reportes")
+    }
+
     return(
 
        <div className="maincontaineradmin">
@@ -26,11 +33,11 @@ export default function MenuAdmin(){
                 </div>
             </div>
             <div className="contenedorCardsadmin">
-                <div className="cardadmin" >
+                <div className="cardadmin" onClick={() => gotoabms()}>
                     <h1>ABMs</h1>
                     <img src="../assets/images/lupa.png" style={{height:85, width:85}}/>
                 </div>
-                <div className="cardadmin" >
+                <div className="cardadmin" onClick={() => gotoreportes()}>
                     <h1>Reportes</h1>
                     <img src="../assets/images/grafico.png"/>
                 </div>

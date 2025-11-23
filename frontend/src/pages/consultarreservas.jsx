@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
 import './consultarreservas.css'
-import API_URL from "@/constants/api"
+import {API_URL} from "../constants/api"
 
 export default function consultarReservas() {
     

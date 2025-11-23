@@ -15,8 +15,6 @@ export default function Menu(){
     }
 
 
-
-
     const gotoReservarSala = () =>
     {
         navigate("/reservarsala",{state:{userid:userid}})

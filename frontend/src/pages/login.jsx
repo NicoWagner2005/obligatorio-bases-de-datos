@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 import "./login.css";
-import {API_URL} from "../constants/api.js";
+import  {API_URL} from "../constants/api.js";
 
 export default function Login() {
 
