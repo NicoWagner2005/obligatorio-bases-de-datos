@@ -1,7 +1,7 @@
 import './abms.css'
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import API_URL from '@/constants/api'
+import {API_URL} from '../constants/api'
 
 export default function ABMs() {
     const navigate = useNavigate()

@@ -1,7 +1,7 @@
 import './reservarSala.css'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import API_URL from '@/constants/api'
+import {API_URL} from '../constants/api'
 
 
 export default function ReservarSala() {
