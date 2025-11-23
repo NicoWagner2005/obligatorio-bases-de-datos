@@ -3,12 +3,16 @@ import os
 import bcrypt
 from fastapi import APIRouter, HTTPException, status
 
-from app.database import get_connection, close_connection
-from app.models.auth import LoginCredentials, LoginResponse, RegistrationCredentials, RegistrationResponse
-from app.utils.hash import hash_password
-from app.utils.jwt import create_access_token
-
-from app.config import ADMIN_EMAIL
+from ..config import ADMIN_EMAIL
+from ..database import close_connection, get_connection
+from ..models.auth import (
+    LoginCredentials,
+    LoginResponse,
+    RegistrationCredentials,
+    RegistrationResponse,
+)
+from ..utils.hash import hash_password
+from ..utils.jwt import create_access_token
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
