@@ -8,6 +8,7 @@ export default function ReservarSala() {
 
     const navigate = useNavigate()
     const userId = localStorage.getItem('user_id')
+    const ci = localStorage.getItem('ci')
     const token = localStorage.getItem('token')
     const [edificios, setEdificios] = useState([])
     const [selectedEdificioId, setSelectedEdificioId] = useState(null)
@@ -46,6 +47,10 @@ export default function ReservarSala() {
             setMessage('Debe iniciar sesión para reservar')
             return
         }
+        if (!ci) {
+            setMessage('No se pudo obtener la cédula del usuario; vuelva a iniciar sesión')
+            return
+        }
         if (!selectedSalaId) {
             setMessage('Seleccione una sala')
             return
@@ -57,7 +62,7 @@ export default function ReservarSala() {
 
         // validar sanción
         try {
-            const sancRes = await fetch(`${API_URL}/sanciones/validar_sancion/${userId}`, {
+            const sancRes = await fetch(`${API_URL}/sanciones/validar_sancion/${ci}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             })
             if (sancRes.ok) {
@@ -74,13 +79,12 @@ export default function ReservarSala() {
         // consultar reservas del usuario para la fecha (para aplicar límite 3h/día)
         let existingHours = 0
         try {
-            // Intentamos un endpoint razonable: /mis-reservas?user_id=...
-            const r = await fetch(`${API_URL}/mis-reservas?user_id=${userId}`, {
+            const r = await fetch(`${API_URL}/salas/mis-reservas`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             })
             if (r.ok) {
                 const data = await r.json()
-                existingHours = (data || []).filter(x => x.fecha === fecha).length
+                existingHours = (data.reservas || []).filter(x => x.fecha === fecha).length
             }
         } catch (err) {
             // si falla, no bloqueamos la operación; el backend validará reglas
@@ -101,7 +105,7 @@ export default function ReservarSala() {
                     id_sala: selectedSalaId,
                     fecha: fecha,
                     id_turno: turno,
-                    user_id: userId
+                    ci_participante: ci
                 }
                 const res = await fetch(`${API_URL}/salas/reservar`, {
                     method: 'POST',

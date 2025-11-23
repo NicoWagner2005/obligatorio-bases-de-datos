@@ -14,12 +14,12 @@ export default function consultarReservas() {
     useEffect(() => {
         const fetchReservas = async () => {
             try {
-                const res = await fetch(`${API_URL}/mis-reservas`, {
+                const res = await fetch(`${API_URL}/salas/mis-reservas`, {
                     headers: { Authorization: `Bearer ${token}` }
                 })
                 if (res.ok) {
                     const data = await res.json()
-                    setMisreservas(data)
+                    setMisreservas(data.reservas || [])
                 }
             } catch (error) {
                 console.error("Error al cargar reservas:", error)
@@ -52,9 +52,10 @@ export default function consultarReservas() {
                         ) : (
                             <ul>
                                 {misreservas.map((reserva) => (
-                                    <li key={reserva.id}>
-                                        <strong>Salón:</strong> {reserva.salon} | 
-                                        <strong> Fecha:</strong> {reserva.fecha} | 
+                                    <li key={reserva.id_reserva}>
+                                        <strong>Sala:</strong> {reserva.id_sala} |
+                                        <strong> Fecha:</strong> {reserva.fecha} |
+                                        <strong> Turno:</strong> {reserva.id_turno}:00 |
                                         <strong> Estado:</strong> {reserva.estado}
                                     </li>
                                 ))}
@@ -63,5 +64,5 @@ export default function consultarReservas() {
                     </div>
                 </div>
             </div>
-            )        
+            )
 }
