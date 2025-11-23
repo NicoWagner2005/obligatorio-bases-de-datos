@@ -1,9 +1,15 @@
 from fastapi import APIRouter, HTTPException, status, Depends
 from mysql.connector import IntegrityError, Error
 from datetime import date
-from app.database import get_connection, close_connection
-from app.models.salas import EdificiosResponse, ReservaResponse, Reserva, AsistenciaResponse, AsistenciaRequest
-from app.utils.jwt import get_current_user
+from ..database import close_connection, get_connection
+from ..models.salas import (
+    AsistenciaRequest,
+    AsistenciaResponse,
+    EdificiosResponse,
+    Reserva,
+    ReservaResponse,
+)
+from ..utils.jwt import get_current_user
 router = APIRouter(prefix="/salas", tags=["Salas"])
 
 
