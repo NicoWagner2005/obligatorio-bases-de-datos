@@ -111,13 +111,16 @@ def login_user(credentials: LoginCredentials):
         token = create_access_token({
             "user_id": participante["user_id"],
             "email": participante["email"],
-            "admin": es_admin
+            "admin": es_admin,
+            "ci": participante["ci"]
         })
 
         # 4️⃣ Login OK
+        # Incluimos la cédula tanto en el token como en la respuesta
         return {
             "message": "Login exitoso",
             "user_id": participante["user_id"],
+            "ci": participante["ci"],
             "token": token,
             "admin": es_admin
         }

@@ -17,5 +17,6 @@ class LoginCredentials(BaseModel):
 class LoginResponse(BaseModel):
     message: str
     user_id: int
+    ci: str
     token: str
     admin: bool

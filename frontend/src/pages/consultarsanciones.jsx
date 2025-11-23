@@ -4,21 +4,21 @@ import {API_URL} from "../constants/api"
 
 export default function CosultarSanciones() {
     const navigate = useNavigate()
-    const user_id = localStorage.getItem("user_id");
+    const ci = localStorage.getItem("ci");
     const [sancion, setSancion] = useState(null)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const cargarSanciones = async () => {
             try {
-                const res = await fetch(`${API_URL}/sanciones/${user_id}`, {
+                const res = await fetch(`${API_URL}/sanciones/${ci}`, {
                     method: "GET",
                     headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
                 })
                 if (res.ok) {
                     const data = await res.json()
-                    // Si el array tiene al menos una sanción, tomamos la primera
-                    setSancion(data.length > 0 ? data[0] : null)
+                    const sanciones = data.sanciones || []
+                    setSancion(sanciones.length > 0 ? sanciones[0] : null)
                 }
             } catch (error) {
                 console.error("Error al cargar sanciones:", error)
@@ -27,7 +27,7 @@ export default function CosultarSanciones() {
             }
         }
         cargarSanciones()
-    }, [user_id])
+    }, [ci])
 
     return(
         <div className="mainContainer">
