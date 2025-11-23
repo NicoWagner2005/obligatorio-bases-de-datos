@@ -119,6 +119,7 @@ def login_user(credentials: LoginCredentials):
         return {
             "message": "Login exitoso",
             "user_id": participante["user_id"],
+            "ci": participante["ci"],
             "token": token,
             "admin": es_admin
         }

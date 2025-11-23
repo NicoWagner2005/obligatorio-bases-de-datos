@@ -8,6 +8,7 @@ export default function ReservarSala() {
 
     const navigate = useNavigate()
     const userId = localStorage.getItem('user_id')
+    const ci = localStorage.getItem('ci')
     const token = localStorage.getItem('token')
     const [edificios, setEdificios] = useState([])
     const [selectedEdificioId, setSelectedEdificioId] = useState(null)
@@ -44,6 +45,10 @@ export default function ReservarSala() {
         setMessage("")
         if (!userId) {
             setMessage('Debe iniciar sesión para reservar')
+            return
+        }
+        if (!ci) {
+            setMessage('No se pudo obtener la cédula del usuario; vuelva a iniciar sesión')
             return
         }
         if (!selectedSalaId) {
