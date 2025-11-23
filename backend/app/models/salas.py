@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 from enum import Enum
 
 
@@ -24,7 +24,7 @@ class Reserva(BaseModel):
     id_sala: int
     fecha: str
     id_turno: int
-    ci_participante: str
+    user_id: int
 
 
 class Edificio(BaseModel):

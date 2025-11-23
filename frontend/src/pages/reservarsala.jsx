@@ -62,7 +62,7 @@ export default function ReservarSala() {
 
         // validar sanción
         try {
-            const sancRes = await fetch(`${API_URL}/sanciones/validar_sancion/${ci}`, {
+            const sancRes = await fetch(`${API_URL}/sanciones/validar_sancion_usuario/${userId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             })
             if (sancRes.ok) {
@@ -105,7 +105,7 @@ export default function ReservarSala() {
                     id_sala: selectedSalaId,
                     fecha: fecha,
                     id_turno: turno,
-                    ci_participante: ci
+                    user_id: Number(userId)
                 }
                 const res = await fetch(`${API_URL}/salas/reservar`, {
                     method: 'POST',

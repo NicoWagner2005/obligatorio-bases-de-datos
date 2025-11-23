@@ -112,7 +112,6 @@ def login_user(credentials: LoginCredentials):
             "user_id": participante["user_id"],
             "email": participante["email"],
             "admin": es_admin,
-            "ci": participante["ci"]
         })
 
         # 4️⃣ Login OK

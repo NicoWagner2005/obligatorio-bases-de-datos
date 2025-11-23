@@ -1,12 +1,13 @@
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from .routers.auth import router as auth_router
-from .routers.salas import router as salas_router
+from .routers.salas import router as salas_router, get_mis_reservas
 from .routers.sanciones import router as sanciones_router
 from .routers.admin import router as admin_router
 from .routers.analytics import router as analytics_router
+from .utils.jwt import get_current_user
 
 app = FastAPI()
 
@@ -29,3 +30,12 @@ app.include_router(salas_router)
 app.include_router(sanciones_router)
 app.include_router(admin_router)
 app.include_router(analytics_router)
+
+
+@app.get("/mis-reservas", include_in_schema=False)
+def alias_mis_reservas(
+    user_id: int | None = Query(None),
+    user = Depends(get_current_user)
+):
+    """Alias sin prefijo para compatibilidad con clientes antiguos."""
+    return get_mis_reservas(user_id=user_id, user=user)

@@ -4,14 +4,14 @@ import {API_URL} from "../constants/api"
 
 export default function CosultarSanciones() {
     const navigate = useNavigate()
-    const ci = localStorage.getItem("ci");
+    const userId = localStorage.getItem("user_id");
     const [sancion, setSancion] = useState(null)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const cargarSanciones = async () => {
             try {
-                const res = await fetch(`${API_URL}/sanciones/${ci}`, {
+                const res = await fetch(`${API_URL}/sanciones/usuario/${userId}`, {
                     method: "GET",
                     headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
                 })
@@ -27,7 +27,7 @@ export default function CosultarSanciones() {
             }
         }
         cargarSanciones()
-    }, [ci])
+    }, [userId])
 
     return(
         <div className="mainContainer">
