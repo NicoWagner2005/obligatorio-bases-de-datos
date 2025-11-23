@@ -4,7 +4,21 @@ import { Navigate, useNavigate } from "react-router-dom"
 export default function MenuAdmin(){
 
 
+    const cerrarSesion = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("admin");
+        localStorage.removeItem("user_id");
+        navigate("/login");
+    }
+ 
     const navigate = useNavigate()
+
+    const gotoabms = () => {
+        navigate("/abms")
+    }
+    const gotoreportes = () => {
+        navigate("/reportes")
+    }
 
     return(
 
@@ -12,18 +26,18 @@ export default function MenuAdmin(){
             <div className="headeradmin">
                     <img src="/assets/images/logo-ucu-blanco.png" alt="logo UCU" className='logoUCUadmin'/>
                 <div className="cerrarSesionadmin">
-                    <button className="botonCerrarSesionadmin" onClick={ () =>navigate("/login")}>
+                    <button className="botonCerrarSesionadmin" onClick={ () => cerrarSesion()}>
                         <img className="imagenCerrarSesionadmin" src="../assets/images/cerrarSesion.png"/>
                         Cerrar sesión
                     </button>
                 </div>
             </div>
             <div className="contenedorCardsadmin">
-                <div className="cardadmin" >
+                <div className="cardadmin" onClick={() => gotoabms()}>
                     <h1>ABMs</h1>
                     <img src="../assets/images/lupa.png" style={{height:85, width:85}}/>
                 </div>
-                <div className="cardadmin" >
+                <div className="cardadmin" onClick={() => gotoreportes()}>
                     <h1>Reportes</h1>
                     <img src="../assets/images/grafico.png"/>
                 </div>

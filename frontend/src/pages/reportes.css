@@ -1,0 +1,167 @@
+/* Importar estilos base si existen */
+@import './reservarSala.css';
+
+.contenido {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    background: #f5f5f5;
+}
+
+.contenido h1 {
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.contenido h2 {
+    color: #555;
+    margin-top: 0;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+}
+
+.contenido h3 {
+    color: #666;
+    margin: 15px 0 10px 0;
+}
+
+/* Sidebar styling */
+.sidebar {
+    width: 250px;
+    background: white;
+    padding: 15px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: fit-content;
+}
+
+.sidebar h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.sidebar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sidebar-button {
+    padding: 10px;
+    text-align: left;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background: #f0f0f0;
+    color: black;
+    transition: 0.3s;
+    font-size: 14px;
+}
+
+.sidebar-button:hover {
+    background: #e0e0e0;
+}
+
+.sidebar-button.active {
+    background: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+/* Main content area */
+.report-container {
+    flex: 1;
+    background: white;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.report-title {
+    margin-top: 0;
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+}
+
+.report-content {
+    overflow-x: auto;
+}
+
+.report-loading {
+    color: #666;
+    text-align: center;
+    padding: 20px;
+}
+
+.report-empty {
+    color: #999;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Table styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    margin-top: 10px;
+}
+
+table thead {
+    background: #f0f0f0;
+    position: sticky;
+    top: 0;
+}
+
+table th {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+    font-weight: bold;
+    color: #333;
+    background: #f9f9f9;
+}
+
+table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    color: #555;
+}
+
+table tbody tr:nth-child(odd) {
+    background: #fafafa;
+}
+
+table tbody tr:hover {
+    background: #f0f0f0;
+    transition: 0.2s;
+}
+
+/* Layout utilities */
+.flex-container {
+    display: flex;
+    gap: 20px;
+    flex: 1;
+}
+
+.flex-container > * {
+    flex: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .flex-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+    }
+
+    .report-container {
+        width: 100%;
+    }
+}

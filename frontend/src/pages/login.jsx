@@ -1,7 +1,7 @@
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import "./login.css";
-import {API_URL} from "../constants/api.js";
+import  {API_URL} from "../constants/api.js";
 
 export default function Login() {
 
@@ -23,18 +23,18 @@ export default function Login() {
             if (!res.ok) {
                 throw Error(`HTTP Error: ${res.status} ${res.statusText}`);
             }
-            const data = await res.json();
 
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("admin", data.admin ? "true" : "false");
-
-            if (data.admin) {
-                navigate("/admin/menu");
-            } else {
-                navigate("/menu"); // menú normal
+            const data = await res.json()
+            localStorage.setItem("token", data.token);    //guarda el token
+            localStorage.setItem("admin", data.admin ? "true" : "false");   
+            localStorage.setItem("user_id", data.user_id)  //guarda el userid
+            if(data.admin){
+              navigate("/menuadmin")
             }
-
-
+            else {
+              navigate("/menu")   //manda el userid como context al menu
+            }
+            
         } catch (err) {
             throw Error(`Error fetching login data: ${err.message ?? err} `);
         }
