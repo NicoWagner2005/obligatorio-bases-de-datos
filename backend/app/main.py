@@ -2,11 +2,11 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers.auth import router as auth_router
-from app.routers.salas import router as salas_router
-from app.routers.sanciones import router as sanciones_router
-from app.routers.admin import router as admin_router
-from app.routers.analytics import router as analytics_router
+from .routers.auth import router as auth_router
+from .routers.salas import router as salas_router
+from .routers.sanciones import router as sanciones_router
+from .routers.admin import router as admin_router
+from .routers.analytics import router as analytics_router
 
 app = FastAPI()
 
