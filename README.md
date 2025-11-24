@@ -4,6 +4,25 @@
 
 ---
 
+
+## 🚀 Ejecución rápida con Docker Compose
+
+El repositorio incluye un `docker-compose` que levanta la base de datos MySQL (con schema y datos de prueba), el backend en FastAPI y el frontend en Vite. Para poner todo en marcha:
+
+1. Instala Docker y Docker Compose.
+2. Desde la raíz del proyecto ejecuta:
+
+```bash
+docker compose up --build
+```
+
+3. Accede al frontend en `http://localhost:5173`. La API queda publicada en `http://localhost:8000`.
+
+Los contenedores exponen los puertos 3306 (MySQL), 8000 (API) y 5173 (frontend) para pruebas locales.
+
+---
+
+
 ## 📘 Descripción del Proyecto
 
 El objetivo de este trabajo es **diseñar e implementar un sistema de información** para la gestión de **salas de estudio en la universidad**.  
@@ -127,9 +146,11 @@ Se deberá implementar una base de datos **relacional (MySQL)** con las siguient
 | Entrega final | 23/11/2025 |
 | Defensas | 05/12/2025 |
 
+
+
 ---
 
-## 👨‍💻 Autor
+## 👨‍💻 Autores
 **Nicolás Wagner**
 Estudiante de Ingeniería en Informática – UCU
 **Guillermo González**
@@ -138,18 +159,3 @@ Estudiante de Ingeniería en Informática – UCU
 Estudiante de Ingeniería en Informática – UCU
 
 ---
-
-## 🚀 Ejecución rápida con Docker Compose
-
-El repositorio incluye un `docker-compose` que levanta la base de datos MySQL (con schema y datos de prueba), el backend en FastAPI y el frontend en Vite. Para poner todo en marcha:
-
-1. Instala Docker y Docker Compose.
-2. Desde la raíz del proyecto ejecuta:
-
-```bash
-docker compose up --build
-```
-
-3. Accede al frontend en `http://localhost:5173`. La API queda publicada en `http://localhost:8000`.
-
-Los contenedores exponen los puertos 3306 (MySQL), 8000 (API) y 5173 (frontend) para pruebas locales.
