@@ -13,6 +13,11 @@ services:
     volumes:
       - ./base-de-datos/schema.sql:/docker-entrypoint-initdb.d/1_schema.sql
       - ./base-de-datos/data.sql:/docker-entrypoint-initdb.d/2_data.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   backend:
     image: obligatorio-backend
@@ -26,7 +31,8 @@ services:
       DB_NAME: reservas_ucu
       ALLOWED_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - "8000:8000"
 

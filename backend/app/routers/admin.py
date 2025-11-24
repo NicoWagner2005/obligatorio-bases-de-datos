@@ -223,7 +223,19 @@ def obtener_participantes():
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM participante")
+        cursor.execute("""SELECT p.ci,
+               p.nombre,
+               p.apellido,
+               p.email,
+               p.user_id,
+               ppa.id_programa,
+               ppa.rol,
+               prog.tipo AS tipo_programa
+        FROM participante p
+                 LEFT JOIN participante_programa_academico ppa
+                           ON p.ci = ppa.ci_participante
+                 LEFT JOIN programa_academico prog
+                           ON prog.id_programa = ppa.id_programa""")
         return cursor.fetchall()
     finally:
         close_connection(cursor, conn)
@@ -464,6 +476,42 @@ def eliminar_sala(id_sala: int):
         cursor.execute("DELETE FROM sala WHERE id_sala = %s", (id_sala,))
         conn.commit()
         return {"message": "Sala eliminada"}
+    finally:
+        close_connection(cursor, conn)
+
+@router.get("/reservas")
+def get_mis_reservas():
+    conn = None
+    cursor = None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+                SELECT *
+                FROM reserva
+            """)
+
+        return cursor.fetchall()
+
+
+    finally:
+        close_connection(cursor, conn)
+
+@router.get("/sanciones")
+def get_sanciones():
+    conn = None
+    cursor = None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("""
+        SELECT *
+        FROM sancion_participante""")
+
+        return cursor.fetchall()
     finally:
         close_connection(cursor, conn)
 

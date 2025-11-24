@@ -326,8 +326,7 @@ export default function ABMs() {
                 </div>
             </div>
 
-            <div className="contenido" style={{ padding: '20px' }}>
-                <h1>Administración</h1>
+<h1>Administración</h1>
 
                 {/* Tabs */}
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '2px solid #ccc', paddingBottom: '10px' }}>
@@ -349,6 +348,9 @@ export default function ABMs() {
                         </button>
                     ))}
                 </div>
+
+            <div className="contenido" style={{ padding: '20px' }}>
+                
 
                 {message && (
                     <p style={{ color: message.includes('Error') || message.includes('error') ? 'red' : 'green', marginBottom: '10px' }}>
@@ -437,7 +439,7 @@ export default function ABMs() {
                                             <td style={{ border: '1px solid #ddd', padding: '8px' }}>{p.nombre}</td>
                                             <td style={{ border: '1px solid #ddd', padding: '8px' }}>{p.apellido}</td>
                                             <td style={{ border: '1px solid #ddd', padding: '8px' }}>{p.email}</td>
-                                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{p.rol}</td>
+                                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>{p.rol ? p.rol : "admin"}</td>
                                             <td style={{ border: '1px solid #ddd', padding: '8px' }}>
                                                 <button onClick={() => setEditingParticipante(p)} style={{ marginRight: '5px', padding: '5px 10px', backgroundColor: '#ffc107', cursor: 'pointer' }}>Editar</button>
                                                 <button onClick={() => eliminarParticipante(p.ci)} style={{ padding: '5px 10px', backgroundColor: '#dc3545', color: 'white', cursor: 'pointer' }}>Eliminar</button>

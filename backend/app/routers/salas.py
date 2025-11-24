@@ -68,97 +68,63 @@ def reservar_sala(datos_reserva: Reserva):
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
-        # 0️⃣ Mapear hora → id_turno real
-        hora_str = f"{datos_reserva.hora_inicio:02d}:00:00"  # "08:00:00"
-
-        cursor.execute("""
-                       SELECT id_turno
-                       FROM turno
-                       WHERE hora_inicio = %s
-                       """, (hora_str,))
-
+        # 0️⃣ Verificar que el turno exista
+        cursor.execute("SELECT * FROM turno WHERE id_turno = %s", (datos_reserva.id_turno,))
         turno_row = cursor.fetchone()
         if not turno_row:
-            raise HTTPException(
-                status_code=404,
-                detail="Turno inexistente"
-            )
+            raise HTTPException(404, "El turno no existe")
 
-        id_turno_real = turno_row["id_turno"]
-
-        # Resolver CI a partir del user_id
-        cursor.execute(
-            "SELECT ci FROM participante WHERE user_id = %s",
-            (datos_reserva.user_id,)
-        )
+        # 1️⃣ Obtener CI del participante
+        cursor.execute("SELECT ci FROM participante WHERE user_id = %s", (datos_reserva.user_id,))
         row = cursor.fetchone()
-
         if not row:
             raise HTTPException(404, "Usuario no encontrado")
-
         ci_participante = row["ci"]
 
-        # 1️⃣ Verificar límite de 3 reservas activas
+        # 2️⃣ Límite de 3 reservas activas
         cursor.execute("""
-                       SELECT COUNT(*) AS total
-                       FROM reserva_participante rp
-                                JOIN reserva r ON rp.id_reserva = r.id_reserva
-                       WHERE rp.ci_participante = %s
-                         AND r.estado = 'activa'
-                       """, (ci_participante,))
-
+            SELECT COUNT(*) AS total
+            FROM reserva r
+            JOIN reserva_participante rp ON r.id_reserva = rp.id_reserva
+            WHERE rp.ci_participante = %s AND r.estado = 'activa'
+        """, (ci_participante,))
         if cursor.fetchone()["total"] >= 3:
             raise HTTPException(429, "El usuario ya tiene 3 reservas activas")
 
-        # 2️⃣ Obtener sala
+        # 3️⃣ Obtener sala
         cursor.execute("SELECT * FROM sala WHERE id_sala = %s", (datos_reserva.id_sala,))
         sala = cursor.fetchone()
-
         if sala is None:
             raise HTTPException(404, "La sala no existe")
 
-        # 4️⃣ Obtener rol
+        # 4️⃣ Rol del participante
         cursor.execute("""
-                       SELECT rol
-                       FROM participante_programa_academico
-                       WHERE ci_participante = %s
-                       """, (ci_participante,))
+            SELECT rol FROM participante_programa_academico
+            WHERE ci_participante = %s
+        """, (ci_participante,))
         participante = cursor.fetchone()
-
         if participante is None:
-            raise HTTPException(404, "El participante no existe")
+            raise HTTPException(404, "Participante no encontrado")
 
         rol = participante["rol"]
 
-        # Estudiantes no pueden reservar exclusivas
+        # reglas de salas exclusivas
         if sala["tipo_sala"] != "libre" and rol == "estudiante":
             raise HTTPException(403, "Los estudiantes no pueden reservar salas exclusivas")
 
-        # Chequear máximo de 2 reservas por sala/día
+        # 5️⃣ Insertar reserva
         cursor.execute("""
-                       SELECT COUNT(*) AS total
-                       FROM reserva
-                       WHERE id_sala = %s
-                         AND fecha = %s
-                         AND estado = 'activa'
-                       """, (datos_reserva.id_sala, datos_reserva.fecha))
-
-        if cursor.fetchone()["total"] >= 2 and rol == "estudiante":
-            raise HTTPException(429, "Esta sala ya tiene 2 reservas activas para este día")
-
-        # 5️⃣ Insertar reserva REAL con id_turno real
-        cursor.execute("""
-                       INSERT INTO reserva(id_sala, fecha, id_turno, estado)
-                       VALUES (%s, %s, %s, %s)
-                       """, (datos_reserva.id_sala, datos_reserva.fecha, id_turno_real, "activa"))
+            INSERT INTO reserva(id_sala, fecha, id_turno, estado)
+            VALUES (%s, %s, %s, %s)
+        """, (datos_reserva.id_sala, datos_reserva.fecha, datos_reserva.id_turno, "activa"))
 
         id_reserva = cursor.lastrowid
 
-        # 6️⃣ Insertar relación participante-reserva
+        # 6️⃣ Insertar participante
         cursor.execute("""
-                       INSERT INTO reserva_participante(id_reserva, fecha_solicitud_reserva, ci_participante)
-                       VALUES (%s, %s, %s)
-                       """, (id_reserva, date.today(), ci_participante))
+            INSERT INTO reserva_participante(id_reserva, fecha_solicitud_reserva, ci_participante)
+            VALUES (%s, %s, %s)
+        """, (id_reserva, date.today(), ci_participante))
 
         conn.commit()
 
@@ -168,11 +134,9 @@ def reservar_sala(datos_reserva: Reserva):
             "estado": "activa"
         }
 
-    except IntegrityError:
-        raise HTTPException(400, "La sala ya está reservada en ese horario")
-
     finally:
         close_connection(cursor, conn)
+
 
 
 @router.get("/mis-reservas")
