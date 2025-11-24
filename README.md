@@ -22,6 +22,17 @@ Los contenedores exponen los puertos 3306 (MySQL), 8000 (API) y 5173 (frontend) 
 
 ---
 
+## USUARIOS DE PRUEBA
+
+- admin
+  correo: fmachado@ucu.edu.uy
+  contraseña: admin123
+  
+- user
+  correo: afernandez@ucu.edu.uy
+  contraseña: user123
+
+---
 
 ## 📘 Descripción del Proyecto
 
