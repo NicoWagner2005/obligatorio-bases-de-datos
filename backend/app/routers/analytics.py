@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.database import get_connection, close_connection
+from ..database import close_connection, get_connection
 
 router = APIRouter(prefix="/analytics", tags=["Analytics"])
 
@@ -47,17 +47,19 @@ def get_turnos_mas_demandados():
 
         cursor.execute(
             """
-                SELECT t.hora_inicio, r.total_reservas
-                FROM turno t
-                JOIN (
-                    SELECT id_turno, COUNT(*) as total_reservas
-                    FROM reserva
-                    GROUP BY id_turno
-                    ORDER BY total_reservas DESC
-                    LIMIT 3
-                ) AS r
-                ON t.id_turno = r.id_turno
-                ORDER BY r.total_reservas DESC;
+                SELECT 
+            TIME_FORMAT(t.hora_inicio, '%H:%i') AS hora_inicio,
+            r.total_reservas
+        FROM turno t
+        JOIN (
+            SELECT id_turno, COUNT(*) as total_reservas
+            FROM reserva
+            GROUP BY id_turno
+            ORDER BY total_reservas DESC
+            LIMIT 3
+        ) AS r
+        ON t.id_turno = r.id_turno
+        ORDER BY r.total_reservas DESC;
             """
         )
 
@@ -289,7 +291,9 @@ def get_turnos_menos_demandados():
 
         cursor.execute(
             """
-                SELECT t.hora_inicio, r.total_reservas
+                SELECT 
+                    TIME_FORMAT(t.hora_inicio, '%H:%i') AS hora_inicio,
+                    r.total_reservas
                 FROM turno t
                 JOIN (
                     SELECT id_turno, COUNT(*) as total_reservas

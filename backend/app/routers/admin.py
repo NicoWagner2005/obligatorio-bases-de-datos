@@ -3,10 +3,10 @@ from typing import Dict, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.database import close_connection, get_connection
-from app.models.admin import *
-from app.utils.hash import hash_password
-from app.utils.jwt import require_admin
+from ..database import close_connection, get_connection
+from ..models.admin import *
+from ..utils.hash import hash_password
+from ..utils.jwt import require_admin
 
 router = APIRouter(prefix="/admin", tags=["Administrativo"], dependencies=[Depends(require_admin)])
 
@@ -214,8 +214,23 @@ def _guardar_participantes(cursor, reserva_id: int, participantes: List[str]) ->
         )
 
 
+
+@router.get("/participantes")
+def obtener_participantes():
+    conn = None
+    cursor = None
+
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM participante")
+        return cursor.fetchall()
+    finally:
+        close_connection(cursor, conn)
+
+
 # Participantes
-@router.post("/participantes", status_code=status.HTTP_201_CREATED)
+@router.post("/participantes/crear", status_code=status.HTTP_201_CREATED)
 def crear_participante(payload: ParticipanteCreate):
     _validar_ci(payload.ci)
     if payload.rol not in ("alumno", "docente"):

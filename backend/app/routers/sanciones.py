@@ -1,7 +1,15 @@
 from fastapi import APIRouter, HTTPException
 from datetime import date
-from app.database import get_connection, close_connection
+from ..database import close_connection, get_connection
 from mysql.connector import Error
+
+
+def _ci_from_user_id(cursor, user_id: int):
+    cursor.execute("SELECT ci FROM participante WHERE user_id = %s", (user_id,))
+    row = cursor.fetchone()
+    if not row:
+        raise HTTPException(404, "Usuario no encontrado")
+    return row["ci"]
 
 router = APIRouter(prefix="/sanciones", tags=["Sanciones"])
 
@@ -35,6 +43,35 @@ def get_sanciones(ci_participante: str):
         close_connection(cursor, conn)
 
 
+@router.get("/usuario/{user_id}")
+def get_sanciones_por_usuario(user_id: int):
+    conn = None
+    cursor = None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        ci = _ci_from_user_id(cursor, user_id)
+
+        cursor.execute("""
+                       SELECT fecha_inicio, fecha_fin
+                       FROM sancion_participante
+                       WHERE ci_participante = %s
+                       ORDER BY fecha_inicio DESC;
+                       """, (ci,))
+        sanciones = cursor.fetchall()
+
+        if not sanciones:
+            return {"message": "El usuario no tiene sanciones"}
+
+        return {"sanciones": sanciones}
+
+    except Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        close_connection(cursor, conn)
+
+
 # ============================================================
 #   2) VALIDAR SI UN USUARIO TIENE SANCIÓN ACTIVA
 # ============================================================
@@ -53,6 +90,37 @@ def validar_sancion(ci_participante: str):
                        WHERE ci_participante = %s
                          AND %s BETWEEN fecha_inicio AND fecha_fin;
                        """, (ci_participante, hoy))
+
+        activas = cursor.fetchone()["activas"]
+
+        return {
+            "bloqueado": activas > 0,
+            "message": "Sanción activa" if activas > 0 else "Sin sanciones activas"
+        }
+
+    except Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        close_connection(cursor, conn)
+
+
+@router.get("/validar_sancion_usuario/{user_id}")
+def validar_sancion_usuario(user_id: int):
+    conn = None
+    cursor = None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        hoy = date.today()
+
+        ci = _ci_from_user_id(cursor, user_id)
+
+        cursor.execute("""
+                       SELECT COUNT(*) AS activas
+                       FROM sancion_participante
+                       WHERE ci_participante = %s
+                         AND %s BETWEEN fecha_inicio AND fecha_fin;
+                       """, (ci, hoy))
 
         activas = cursor.fetchone()["activas"]
 

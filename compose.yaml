@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: mysql:8.0
@@ -8,14 +6,41 @@ services:
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: reservas_ucu        
-      TZ: America/Montevideo              
+      MYSQL_DATABASE: reservas_ucu
+      TZ: America/Montevideo
     ports:
       - "3306:3306"
     volumes:
       - ./base-de-datos/schema.sql:/docker-entrypoint-initdb.d/1_schema.sql
       - ./base-de-datos/data.sql:/docker-entrypoint-initdb.d/2_data.sql
 
+  backend:
+    image: obligatorio-backend
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: reservas_ucu
+      ALLOWED_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+
+  frontend:
+    image: obligatorio-frontend
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    environment:
+      VITE_API_URL: http://localhost:8000
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+
 volumes:
   mysql_data:
-
