@@ -23,9 +23,8 @@ class EstadoReserva(str, Enum):
 class Reserva(BaseModel):
     id_sala: int
     fecha: str
-    id_turno: int
+    hora_inicio: int  # 8, 9, 10, 11
     user_id: int
-
 
 class Edificio(BaseModel):
     id_edificio: int

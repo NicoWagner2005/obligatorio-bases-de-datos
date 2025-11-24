@@ -31,11 +31,3 @@ app.include_router(sanciones_router)
 app.include_router(admin_router)
 app.include_router(analytics_router)
 
-
-@app.get("/mis-reservas", include_in_schema=False)
-def alias_mis_reservas(
-    user_id: int | None = Query(None),
-    user = Depends(get_current_user)
-):
-    """Alias sin prefijo para compatibilidad con clientes antiguos."""
-    return get_mis_reservas(user_id=user_id, user=user)
